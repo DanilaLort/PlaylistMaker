@@ -16,6 +16,7 @@
             android:layout_height="wrap_content">
 
             <Button
+                android:id="@+id/back_to_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
@@ -40,93 +41,51 @@
         </FrameLayout>
     </LinearLayout>
 
-    <FrameLayout
+    <Switch
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:paddingVertical="12dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"
-            android:text="@string/DarkTheme"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end" />
-    </FrameLayout>
-
-    <FrameLayout
+        android:text="@string/DarkTheme"
+        android:textSize="20sp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"/>
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"
-            android:text="@string/share"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_share"
-            app:iconGravity="end"
-            app:iconTint="@color/blackish_blue" />
-    </FrameLayout>
-
-    <FrameLayout
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:backgroundTint="@color/white"
+        app:icon="@drawable/ic_share"
+        app:iconGravity="end"
+        app:iconTint="@color/blackish_blue"
+        android:text="@string/share"
+        android:textColor="@color/black"
+        android:textSize="16sp"/>
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"
-            android:text="@string/support"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_support"
-            app:iconGravity="end"
-            app:iconTint="@color/blackish_blue" />
-    </FrameLayout>
-
-    <FrameLayout
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:backgroundTint="@color/white"
+        app:icon="@drawable/ic_support"
+        app:iconGravity="end"
+        app:iconTint="@color/blackish_blue"
+        android:text="@string/support"
+        android:textColor="@color/black"
+        android:textSize="16sp"/>
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"
-            android:text="@string/terms_of_use"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_arrow_forward"
-            app:iconGravity="end"
-            app:iconTint="@color/blackish_blue" />
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:backgroundTint="@color/white"
+        app:icon="@drawable/ic_arrow_forward"
+        app:iconGravity="end"
+        app:iconTint="@color/blackish_blue"
+        android:text="@string/terms_of_use"
+        android:textColor="@color/black"
+        android:textSize="16sp"/>
 </LinearLayout>

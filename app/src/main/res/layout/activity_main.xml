@@ -29,6 +29,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/button_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -48,6 +49,7 @@
 
 
     <Button
+        android:id="@+id/button_media_lib"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -65,6 +67,7 @@
         android:backgroundTint="@color/white"/>
 
     <Button
+        android:id="@+id/button_settings"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
