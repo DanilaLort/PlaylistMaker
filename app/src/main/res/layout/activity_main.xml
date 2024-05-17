@@ -41,6 +41,7 @@
         android:backgroundTint="@color/white"
         android:text="@string/Search"
         android:textColor="@color/blackish_blue"
+        android:textAllCaps="false"
         android:textSize="22sp"
         app:cornerRadius="16dp"
         app:icon="@drawable/ic_search"
@@ -53,17 +54,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_weight="1"
         android:layout_marginHorizontal="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:text="@string/MediaLib"
+        android:textColor="@color/blackish_blue"
+        android:textAllCaps="false"
+        android:textSize="22sp"
         app:cornerRadius="16dp"
         app:icon="@drawable/ic_media_lib"
         app:iconGravity="textStart"
         app:iconPadding="3dp"
-        app:iconTint="@color/blackish_blue"
-        android:text="@string/MediaLib"
-        android:textSize="22sp"
-        android:textColor="@color/blackish_blue"
-        android:backgroundTint="@color/white"/>
+        app:iconTint="@color/blackish_blue" />
 
     <Button
         android:id="@+id/button_settings"
@@ -78,6 +80,7 @@
         app:iconPadding="3dp"
         app:iconTint="@color/blackish_blue"
         android:text="@string/Settings"
+        android:textAllCaps="false"
         android:textSize="22sp"
         android:textColor="@color/blackish_blue"
         android:backgroundTint="@color/white"/>

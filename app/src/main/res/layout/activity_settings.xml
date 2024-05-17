@@ -45,22 +45,27 @@
     <Switch
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="18dp"
         android:layout_marginTop="24dp"
-        android:text="@string/DarkTheme"
-        android:textSize="20sp"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"/>
+        android:paddingVertical="12dp"
+        android:scrollbarSize="24dp"
+        android:text="@string/DarkTheme"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@color/black"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
         android:background="@android:color/transparent"
+        android:backgroundTint="@color/white"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:text="@string/share"
+        android:textAllCaps="false"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:icon="@drawable/ic_share"
@@ -80,7 +85,9 @@
         app:iconTint="@color/blackish_blue"
         android:text="@string/support"
         android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,5 +101,7 @@
         app:iconTint="@color/blackish_blue"
         android:text="@string/terms_of_use"
         android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        />
 </LinearLayout>
