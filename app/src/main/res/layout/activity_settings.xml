@@ -21,6 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:backgroundTint="@color/white"
+                android:background="@android:color/transparent"
                 app:cornerRadius="16dp"
                 app:icon="@drawable/ic_arrow_back"
                 app:iconTint="@color/blackish_blue" />
@@ -44,24 +45,28 @@
     <Switch
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="@string/DarkTheme"
         android:textSize="20sp"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"/>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:background="@android:color/transparent"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
-        android:backgroundTint="@color/white"
-        app:icon="@drawable/ic_share"
-        app:iconGravity="end"
-        app:iconTint="@color/blackish_blue"
         android:text="@string/share"
         android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        app:icon="@drawable/ic_share"
+        app:iconGravity="end"
+        app:iconTint="@color/blackish_blue" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,6 +74,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:backgroundTint="@color/white"
+        android:background="@android:color/transparent"
         app:icon="@drawable/ic_support"
         app:iconGravity="end"
         app:iconTint="@color/blackish_blue"
@@ -82,6 +88,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:backgroundTint="@color/white"
+        android:background="@android:color/transparent"
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="end"
         app:iconTint="@color/blackish_blue"

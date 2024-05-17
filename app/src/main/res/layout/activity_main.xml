@@ -3,12 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="28dp"
     android:orientation="vertical"
     android:background="@color/blue">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:paddingTop="4dp"
         android:paddingLeft="4dp">
         <FrameLayout
@@ -28,25 +30,23 @@
         </FrameLayout>
     </LinearLayout>
 
+
     <Button
         android:id="@+id/button_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_weight="1"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:text="@string/Search"
+        android:textColor="@color/blackish_blue"
+        android:textSize="22sp"
         app:cornerRadius="16dp"
         app:icon="@drawable/ic_search"
         app:iconGravity="textStart"
         app:iconPadding="3dp"
-        app:iconTint="@color/blackish_blue"
-        android:text="@string/Search"
-        android:textSize="22sp"
-        android:textColor="@color/blackish_blue"
-        android:backgroundTint="@color/white"
-        />
-
+        app:iconTint="@color/blackish_blue" />
 
     <Button
         android:id="@+id/button_media_lib"
@@ -55,7 +55,6 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="16dp"
         app:cornerRadius="16dp"
         app:icon="@drawable/ic_media_lib"
         app:iconGravity="textStart"
@@ -72,7 +71,6 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="16dp"
         app:cornerRadius="16dp"
         android:layout_gravity="center"
         app:icon="@drawable/ic_settings"
