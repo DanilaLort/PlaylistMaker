@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorOtherScreens">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <Button
+            android:id="@+id/settings_to_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/Settings"
+            app:icon="@drawable/ic_arrow_back"
+            app:iconTint="?attr/colorOnPrimary"
+            app:iconSize="24dp"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:padding="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/ys_display_medium"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:text="@string/Settings"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="22sp" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <Switch
+        style="@style/settingsButton"
+        android:id="@+id/switch_them"
+        android:layout_marginTop="24dp"
+        android:padding="17dp"
+        android:text="@string/DarkTheme" />
+
+    <Button
+        style="@style/settingsButton"
+        android:id="@+id/button_share"
+        android:text="@string/share"
+        app:icon="@drawable/ic_share"/>
+
+    <Button
+        style="@style/settingsButton"
+        android:id="@+id/button_support"
+        app:icon="@drawable/ic_support"
+        android:text="@string/support"/>
+    <Button
+        style="@style/settingsButton"
+        android:id="@+id/button_terms_of_use"
+        app:icon="@drawable/ic_arrow_forward"
+        android:text="@string/terms_of_use"/>
+</LinearLayout>
