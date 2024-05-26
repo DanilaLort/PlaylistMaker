@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         findViewById<Button>(R.id.button_search).setOnClickListener {
             startActivity(
                 Intent(
