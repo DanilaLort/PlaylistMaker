@@ -8,5 +8,4 @@ class MediaLibraryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_library)
     }
-
 }

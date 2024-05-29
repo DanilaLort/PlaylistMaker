@@ -3,6 +3,7 @@ package com.example.playlistmaker
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -38,9 +39,6 @@ class SearchActivity : AppCompatActivity() {
                 searchText = editText.text.toString()
             }
         }
-        if (savedInstanceState != null) {
-            editText.setText(savedInstanceState.getString(SEARCH_TEXT, SEARCH_TEXT_DEF))
-        }
         editText.addTextChangedListener(textWatcher)
         buttonClear.setOnClickListener {
             editText.setText("")
@@ -52,6 +50,15 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(SEARCH_TEXT, searchText)
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_TEXT_DEF)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        findViewById<EditText>(R.id.search_text_field).setText(searchText)
+    }
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_TEXT_DEF = ""
