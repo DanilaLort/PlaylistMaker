@@ -4,104 +4,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="?attr/colorOtherScreens">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="4dp">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/settings_to_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/Settings"
+            app:icon="@drawable/ic_arrow_back"
+            app:iconTint="?attr/colorOnPrimary"
+            app:iconSize="24dp"/>
 
-            <Button
-                android:id="@+id/back_to_main"
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:padding="6dp">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:backgroundTint="@color/white"
-                android:background="@android:color/transparent"
-                app:cornerRadius="16dp"
-                app:icon="@drawable/ic_arrow_back"
-                app:iconTint="@color/blackish_blue" />
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:padding="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/Settings"
-                    android:textSize="22sp"
-                    android:textColor="@color/blackish_blue"/>
-            </FrameLayout>
+                android:fontFamily="@font/ys_display_medium"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:text="@string/Settings"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="22sp" />
         </FrameLayout>
     </LinearLayout>
 
     <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="18dp"
+        style="@style/settingsButton"
+        android:id="@+id/switch_them"
         android:layout_marginTop="24dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:scrollbarSize="24dp"
-        android:text="@string/DarkTheme"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        android:textColor="@color/black"/>
+        android:padding="17dp"
+        android:text="@string/DarkTheme" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:backgroundTint="@color/white"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
+        style="@style/settingsButton"
+        android:id="@+id/button_share"
         android:text="@string/share"
-        android:textAllCaps="false"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:icon="@drawable/ic_share"
-        app:iconGravity="end"
-        app:iconTint="@color/blackish_blue" />
+        app:icon="@drawable/ic_share"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:backgroundTint="@color/white"
-        android:background="@android:color/transparent"
+        style="@style/settingsButton"
+        android:id="@+id/button_support"
         app:icon="@drawable/ic_support"
-        app:iconGravity="end"
-        app:iconTint="@color/blackish_blue"
-        android:text="@string/support"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textAllCaps="false"
-        />
+        android:text="@string/support"/>
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:backgroundTint="@color/white"
-        android:background="@android:color/transparent"
+        style="@style/settingsButton"
+        android:id="@+id/button_terms_of_use"
         app:icon="@drawable/ic_arrow_forward"
-        app:iconGravity="end"
-        app:iconTint="@color/blackish_blue"
-        android:text="@string/terms_of_use"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textAllCaps="false"
-        />
+        android:text="@string/terms_of_use"/>
 </LinearLayout>
