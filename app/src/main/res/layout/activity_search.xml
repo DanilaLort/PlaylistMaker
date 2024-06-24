@@ -79,7 +79,13 @@
                 android:layout_weight="3"
                 app:icon="@drawable/ic_clear_button"
                 app:iconTint="?attr/colorOnPrimaryContainer"
-                app:iconSize="16dp"/>
+                app:iconSize="16dp"
+                app:iconGravity="textStart"/>
         </LinearLayout>
     </FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trackList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </LinearLayout>

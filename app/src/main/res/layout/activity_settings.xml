@@ -61,9 +61,10 @@
         android:id="@+id/button_support"
         app:icon="@drawable/ic_support"
         android:text="@string/support"/>
+
     <Button
-        style="@style/settingsButton"
         android:id="@+id/button_terms_of_use"
-        app:icon="@drawable/ic_arrow_forward"
-        android:text="@string/terms_of_use"/>
+        style="@style/settingsButton"
+        android:text="@string/terms_of_use"
+        app:icon="@drawable/ic_arrow_forward"/>
 </LinearLayout>
