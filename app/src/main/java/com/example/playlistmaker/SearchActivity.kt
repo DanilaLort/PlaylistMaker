@@ -46,14 +46,38 @@ class SearchActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val getTrack = retrofit.create(TrackApi::class.java)
-        val errorImage = findViewById<ImageView>(R.id.errorImage)
-        val errorMessage = findViewById<TextView>(R.id.errorMessage)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
         val recyclerView = findViewById<RecyclerView>(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val editText = findViewById<EditText>(R.id.search_text_field)
         val buttonClear = findViewById<Button>(R.id.button_clear)
         buttonClear.visibility = View.GONE
+        val enqueueSample = object : Callback<TrackResponse> {
+            override fun onResponse(
+                call: Call<TrackResponse>,
+                response: Response<TrackResponse>
+            ) {
+                if (response.body()?.results?.isEmpty() == true) {
+                    if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+                    showMessage(R.string.nothing_was_found)
+                } else {
+                    showMessage(View.GONE)
+                    if (response.body() != null) {
+                        val trackAdapter = TrackAdapter(response.body()!!.results)
+                        recyclerView.adapter = trackAdapter
+                        Log.d(
+                            "TRANSLATION_LOG",
+                            "${response.body()?.results?.get(0)?.trackTime}"
+                        )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+                showMessage(R.string.communication_problems)
+            }
+        }
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -69,31 +93,7 @@ class SearchActivity : AppCompatActivity() {
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (!searchText.isNullOrEmpty()) getTrack.search(searchText)
-                    .enqueue(object : Callback<TrackResponse> {
-                        override fun onResponse(
-                            call: Call<TrackResponse>,
-                            response: Response<TrackResponse>
-                        ) {
-                            if (response.body()?.results?.isEmpty() == true) {
-                                showMessage(R.string.nothing_was_found)
-                            } else {
-                                showMessage(View.GONE)
-                                if (response.body() != null) {
-                                    val trackAdapter = TrackAdapter(response.body()!!.results)
-                                    recyclerView.adapter = trackAdapter
-                                    Log.d(
-                                        "TRANSLATION_LOG",
-                                        "${response.body()?.results?.get(0)?.trackTime}"
-                                    )
-                                }
-                            }
-                        }
-
-                        override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                            if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                            showMessage(R.string.communication_problems)
-                        }
-                    })
+                    .enqueue(enqueueSample)
                 true
             }
             false
@@ -107,31 +107,7 @@ class SearchActivity : AppCompatActivity() {
         }
         reloadButton.setOnClickListener {
             getTrack.search(reloadText)
-                .enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        if (response.body()?.results?.isEmpty() == true) {
-                            showMessage(R.string.nothing_was_found)
-                        } else {
-                            showMessage(View.GONE)
-                            if (response.body() != null) {
-                                val trackAdapter = TrackAdapter(response.body()!!.results)
-                                recyclerView.adapter = trackAdapter
-                                Log.d(
-                                    "TRANSLATION_LOG",
-                                    "${response.body()?.results?.get(0)?.trackTime}"
-                                )
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                        if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                        showMessage(R.string.communication_problems)
-                    }
-                })
+                .enqueue(enqueueSample)
         }
     }
 
