@@ -12,4 +12,8 @@
     <string name="supportEmail">lortrem32@gmail.com</string>
     <string name="urlTermsOfUse">https://yandex.ru/legal/practicum_offer/</string>
     <string name="urlToShare">https://practicum.yandex.ru/android-developer/</string>
+    <string name="reload">Обновить</string>
+    <string name="nothing_was_found">Ничего не нашлось</string>
+    <string name="communication_problems">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="baseUrl">https://itunes.apple.com</string>
 </resources>
