@@ -25,10 +25,6 @@ class TrackAdapter(
         val sharedPrefs = holder.itemView.context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
         holder.itemView.setOnClickListener {
             val tracksHistory: ArrayList<Track> = ArrayList()
-            Log.d(
-                "TRACK_LOG",
-                "${tracks[position]}\n"
-            )
             val savedHistory = Gson().fromJson<ArrayList<Track>>(
                 sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, ""),
                 object : TypeToken<ArrayList<Track>>() {}.type
@@ -40,10 +36,6 @@ class TrackAdapter(
             sharedPrefs.edit()
                 .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(tracksHistory))
                 .apply()
-            Log.d(
-                "TRACK_LOG",
-                "$tracksHistory"
-            )
         }
     }
 

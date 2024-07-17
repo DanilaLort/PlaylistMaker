@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -26,12 +25,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
+import kotlin.Exception
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = ""
-    val trackList: ArrayList<Track> = ArrayList()
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,23 +48,14 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val editText = findViewById<EditText>(R.id.search_text_field)
         val buttonClear = findViewById<Button>(R.id.button_clear)
-
-//        try {
-//            if (arr != null && arr.isNotEmpty())
-//            Log.d(
-//                "TRACK_LOG",
-//                "${arr[0].artistName} ${TypeToken.getArray(ArrayList<Track>()::class.java)}"
-//            )
-//        } catch(ex: Exception) {
-//            Log.d(
-//                "TRACK_LOG",
-//                "${ex.message}"
-//            )
-//        }
-        editText.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus && editText.text.isEmpty()) showSearchHistory(recyclerView, sharedPrefs)
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && editText.text.isEmpty()) showSearchHistory(
+                recyclerView,
+                sharedPrefs
+                )
             else showMessage(View.GONE)
         }
+
         findViewById<Button>(R.id.clear_history_button).setOnClickListener {
             sharedPrefs.edit()
                 .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(ArrayList<Track>()))
@@ -115,7 +104,7 @@ class SearchActivity : AppCompatActivity() {
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 showMessage(View.GONE)
-                clearRecyclerView(recyclerView.adapter as TrackAdapter)
+                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
                 if (!searchText.isNullOrEmpty()) getTrack.search(searchText)
                     .enqueue(enqueueSample)
                 true
