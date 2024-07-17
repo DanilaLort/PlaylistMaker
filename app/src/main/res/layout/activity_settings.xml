@@ -43,12 +43,12 @@
         </FrameLayout>
     </LinearLayout>
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         style="@style/settingsButton"
-        android:id="@+id/switch_them"
+        android:id="@+id/themeSwitcher"
         android:layout_marginTop="24dp"
         android:padding="17dp"
-        android:text="@string/DarkTheme" />
+        android:text="@string/DarkTheme"/>
 
     <Button
         style="@style/settingsButton"

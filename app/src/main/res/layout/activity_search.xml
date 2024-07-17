@@ -82,16 +82,32 @@
                 app:icon="@drawable/ic_clear_button"
                 app:iconTint="?attr/colorOnPrimaryContainer"
                 app:iconSize="16dp"
-                app:iconGravity="textStart"/>
+                app:iconGravity="textStart"
+                android:visibility="gone"/>
         </LinearLayout>
     </FrameLayout>
-    <FrameLayout android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/search_history_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        android:text="@string/search_history"
+        android:textSize="19sp"
+        android:textColor="?attr/colorOnPrimary"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="center"
+        android:visibility="gone"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trackList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginBottom="48dp"/>
+
         <LinearLayout
             android:id="@+id/placeholderMessage"
             android:layout_width="match_parent"
@@ -126,5 +142,16 @@
                 android:text="@string/reload"
                 android:visibility="gone"/>
         </LinearLayout>
+        <Button
+            android:id="@+id/clear_history_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:backgroundTint="?attr/colorOnPrimary"
+            android:textColor="?attr/colorOtherScreens"
+            android:textSize="14sp"
+            android:text="@string/clear_history"
+            android:visibility="gone"/>
     </FrameLayout>
 </LinearLayout>

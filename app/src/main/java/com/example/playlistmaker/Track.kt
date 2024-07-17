@@ -10,9 +10,16 @@ data class Track (
     val artistName: String,
     @SerializedName("trackTimeMillis")
     val trackTime: Long,
+    val trackId: Int,
     val artworkUrl100: String,
 ) {
     fun getTrackTime(): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
     }
+
+    override fun toString(): String {
+        return "$trackName $trackId\n"
+    }
 }
+
+

@@ -2,14 +2,13 @@ package com.example.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -17,18 +16,17 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import java.text.SimpleDateFormat
-import java.util.Locale
+import java.lang.Exception
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
@@ -41,6 +39,7 @@ class SearchActivity : AppCompatActivity() {
         findViewById<Button>(R.id.search_to_main).setOnClickListener {
             finish()
         }
+        val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.baseUrl))
             .addConverterFactory(GsonConverterFactory.create())
@@ -51,7 +50,30 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val editText = findViewById<EditText>(R.id.search_text_field)
         val buttonClear = findViewById<Button>(R.id.button_clear)
-        buttonClear.visibility = View.GONE
+
+//        try {
+//            if (arr != null && arr.isNotEmpty())
+//            Log.d(
+//                "TRACK_LOG",
+//                "${arr[0].artistName} ${TypeToken.getArray(ArrayList<Track>()::class.java)}"
+//            )
+//        } catch(ex: Exception) {
+//            Log.d(
+//                "TRACK_LOG",
+//                "${ex.message}"
+//            )
+//        }
+        editText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && editText.text.isEmpty()) showSearchHistory(recyclerView, sharedPrefs)
+            else showMessage(View.GONE)
+        }
+        findViewById<Button>(R.id.clear_history_button).setOnClickListener {
+            sharedPrefs.edit()
+                .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(ArrayList<Track>()))
+                .apply()
+            if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+            showMessage(View.GONE)
+        }
         val enqueueSample = object : Callback<TrackResponse> {
             override fun onResponse(
                 call: Call<TrackResponse>,
@@ -62,11 +84,11 @@ class SearchActivity : AppCompatActivity() {
                     showMessage(R.string.nothing_was_found)
                 } else {
                     showMessage(View.GONE)
-                    if (response.body() != null) {
-                        val trackAdapter = TrackAdapter(response.body()!!.results)
+                    if (response.body()?.results != null) {
+                        val trackAdapter = response.body()?.results?.let { TrackAdapter(it) }
                         recyclerView.adapter = trackAdapter
                         Log.d(
-                            "TRANSLATION_LOG",
+                            "TRACK_LOG",
                             "${response.body()?.results?.get(0)?.trackTime}"
                         )
                     }
@@ -92,6 +114,8 @@ class SearchActivity : AppCompatActivity() {
         }
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                showMessage(View.GONE)
+                clearRecyclerView(recyclerView.adapter as TrackAdapter)
                 if (!searchText.isNullOrEmpty()) getTrack.search(searchText)
                     .enqueue(enqueueSample)
                 true
@@ -101,9 +125,10 @@ class SearchActivity : AppCompatActivity() {
         editText.addTextChangedListener(textWatcher)
         buttonClear.setOnClickListener {
             editText.setText("")
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+            editText.clearFocus()
         }
         reloadButton.setOnClickListener {
             getTrack.search(reloadText)
@@ -124,6 +149,17 @@ class SearchActivity : AppCompatActivity() {
     private companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_TEXT_DEF = ""
+    }
+
+    private fun showSearchHistory(recyclerView: RecyclerView, sharedPrefs: SharedPreferences) {
+        val trackHistory = Gson().fromJson<ArrayList<Track>>(
+            sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, ""),
+            object : TypeToken<ArrayList<Track>>() {}.type
+        )
+        if (trackHistory.isNotEmpty()) {
+            showMessage(R.string.search_history)
+            recyclerView.adapter = TrackAdapter(trackHistory)
+        }
     }
 
     fun clearRecyclerView(adapter: TrackAdapter) {
@@ -148,7 +184,13 @@ class SearchActivity : AppCompatActivity() {
                 errorMessage.setText(R.string.communication_problems)
                 reloadButton.visibility = View.VISIBLE
             }
+            R.string.search_history -> {
+                findViewById<Button>(R.id.clear_history_button).visibility = View.VISIBLE
+                findViewById<TextView>(R.id.search_history_title).visibility = View.VISIBLE
+            }
             View.GONE -> {
+                findViewById<Button>(R.id.clear_history_button).visibility = View.GONE
+                findViewById<TextView>(R.id.search_history_title).visibility = View.GONE
                 placeholderMessage.visibility = View.GONE
             }
         }
