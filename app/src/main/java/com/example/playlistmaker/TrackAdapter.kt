@@ -26,7 +26,7 @@ class TrackAdapter(
         holder.itemView.setOnClickListener {
             val tracksHistory: ArrayList<Track> = ArrayList()
             val savedHistory = Gson().fromJson<ArrayList<Track>>(
-                sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, ""),
+                sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE),
                 object : TypeToken<ArrayList<Track>>() {}.type
             )
             if (savedHistory.isNotEmpty() && savedHistory != null) tracksHistory.addAll(savedHistory)

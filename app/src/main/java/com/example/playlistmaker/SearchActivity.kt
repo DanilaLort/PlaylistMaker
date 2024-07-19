@@ -27,6 +27,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.Exception
 
+const val SEARCH_HISTORY_DEF_VALUE = "[]"
+
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = ""
@@ -58,7 +60,7 @@ class SearchActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.clear_history_button).setOnClickListener {
             sharedPrefs.edit()
-                .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(ArrayList<Track>()))
+                .putString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE)
                 .apply()
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
             showMessage(View.GONE)
@@ -142,7 +144,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showSearchHistory(recyclerView: RecyclerView, sharedPrefs: SharedPreferences) {
         val trackHistory = Gson().fromJson<ArrayList<Track>>(
-            sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, ""),
+            sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE),
             object : TypeToken<ArrayList<Track>>() {}.type
         )
         if (trackHistory.isNotEmpty()) {
