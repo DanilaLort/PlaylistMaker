@@ -109,7 +109,7 @@
             android:layout_marginBottom="48dp"/>
 
         <LinearLayout
-            android:id="@+id/placeholderMessage"
+            android:id="@+id/placeholder_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

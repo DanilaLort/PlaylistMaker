@@ -9,6 +9,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 const val KEY_FOR_TRACK_HISTORY = "key_for_track_history"
+const val SEARCH_HISTORY_DEF_VALUE = "[]"
+const val SEARCH_HISTORY_SIZE = 10
 
 class TrackAdapter(
     private val tracks: ArrayList<Track>
@@ -32,7 +34,7 @@ class TrackAdapter(
             if (savedHistory.isNotEmpty() && savedHistory != null) tracksHistory.addAll(savedHistory)
             if (tracksHistory.contains(tracks[position])) tracksHistory.remove(tracks[position])
             tracksHistory.add(0, tracks[position])
-            if (tracksHistory.size > 10) tracksHistory.removeAt(9)
+            if (tracksHistory.size > SEARCH_HISTORY_SIZE) tracksHistory.removeAt(SEARCH_HISTORY_SIZE - 1)
             sharedPrefs.edit()
                 .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(tracksHistory))
                 .apply()

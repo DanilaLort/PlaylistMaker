@@ -27,7 +27,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.Exception
 
-const val SEARCH_HISTORY_DEF_VALUE = "[]"
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
@@ -55,7 +54,7 @@ class SearchActivity : AppCompatActivity() {
                 recyclerView,
                 sharedPrefs
                 )
-            else showMessage(View.GONE)
+            else showMessage(Message.VIEW_GONE)
         }
 
         findViewById<Button>(R.id.clear_history_button).setOnClickListener {
@@ -63,7 +62,7 @@ class SearchActivity : AppCompatActivity() {
                 .putString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE)
                 .apply()
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-            showMessage(View.GONE)
+            showMessage(Message.VIEW_GONE)
         }
         val enqueueSample = object : Callback<TrackResponse> {
             override fun onResponse(
@@ -72,9 +71,9 @@ class SearchActivity : AppCompatActivity() {
             ) {
                 if (response.body()?.results?.isEmpty() == true) {
                     if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                    showMessage(R.string.nothing_was_found)
+                    showMessage(Message.NOTHING_WAS_FOUND)
                 } else {
-                    showMessage(View.GONE)
+                    showMessage(Message.VIEW_GONE)
                     if (response.body()?.results != null) {
                         val trackAdapter = response.body()?.results?.let { TrackAdapter(it) }
                         recyclerView.adapter = trackAdapter
@@ -88,7 +87,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
                 if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                showMessage(R.string.communication_problems)
+                showMessage(Message.COMMUNICATION_PROBLEMS)
             }
         }
         val textWatcher = object : TextWatcher {
@@ -105,7 +104,7 @@ class SearchActivity : AppCompatActivity() {
         }
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                showMessage(View.GONE)
+                showMessage(Message.VIEW_GONE)
                 if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
                 if (!searchText.isNullOrEmpty()) getTrack.search(searchText)
                     .enqueue(enqueueSample)
@@ -148,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
             object : TypeToken<ArrayList<Track>>() {}.type
         )
         if (trackHistory.isNotEmpty()) {
-            showMessage(R.string.search_history)
+            showMessage(Message.SEARCH_HISTORY)
             recyclerView.adapter = TrackAdapter(trackHistory)
         }
     }
@@ -157,33 +156,39 @@ class SearchActivity : AppCompatActivity() {
         adapter.clearList()
     }
 
-    fun showMessage(textMessage: Int) {
-        val placeholderMessage = findViewById<LinearLayout>(R.id.placeholderMessage)
+    fun showMessage(messageType: Message) {
+        val placeholderMessage = findViewById<LinearLayout>(R.id.placeholder_message)
         val errorImage = findViewById<ImageView>(R.id.errorImage)
         val errorMessage = findViewById<TextView>(R.id.errorMessage)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
-        when (textMessage) {
-            R.string.nothing_was_found -> {
+        when (messageType) {
+            Message.NOTHING_WAS_FOUND -> {
                 reloadButton.visibility = View.GONE
                 placeholderMessage.visibility = View.VISIBLE
                 errorImage.setImageResource(R.drawable.nothing_was_found)
                 errorMessage.setText(R.string.nothing_was_found)
             }
-            R.string.communication_problems -> {
+            Message.COMMUNICATION_PROBLEMS -> {
                 placeholderMessage.visibility = View.VISIBLE
                 errorImage.setImageResource(R.drawable.communication_problems)
                 errorMessage.setText(R.string.communication_problems)
                 reloadButton.visibility = View.VISIBLE
             }
-            R.string.search_history -> {
+            Message.SEARCH_HISTORY -> {
                 findViewById<Button>(R.id.clear_history_button).visibility = View.VISIBLE
                 findViewById<TextView>(R.id.search_history_title).visibility = View.VISIBLE
             }
-            View.GONE -> {
+            Message.VIEW_GONE -> {
                 findViewById<Button>(R.id.clear_history_button).visibility = View.GONE
                 findViewById<TextView>(R.id.search_history_title).visibility = View.GONE
                 placeholderMessage.visibility = View.GONE
             }
         }
+    }
+    enum class Message {
+        NOTHING_WAS_FOUND,
+        COMMUNICATION_PROBLEMS,
+        SEARCH_HISTORY,
+        VIEW_GONE
     }
 }
