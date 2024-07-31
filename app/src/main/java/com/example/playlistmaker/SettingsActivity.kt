@@ -5,16 +5,19 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
-import android.widget.Switch
-import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.switchmaterial.SwitchMaterial
+
+const val SHARED_PREFERENCES = "preference_for_settings"
+const val KEY_FOR_THEME = "key_for_theme"
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
         findViewById<Button>(R.id.settings_to_main).setOnClickListener {
             finish()
         }
@@ -40,9 +43,16 @@ class SettingsActivity : AppCompatActivity() {
                 Intent(
                     Intent.ACTION_VIEW,
                     Uri.parse(getString(R.string.urlTermsOfUse))
-                    )
+                )
             )
         }
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            (applicationContext as App).switchTheme(checked)
+           sharedPrefs.edit()
+               .putBoolean(KEY_FOR_THEME, checked)
+               .apply()
+        }
+        themeSwitcher.isChecked = sharedPrefs.getBoolean(KEY_FOR_THEME, false)
     }
 }
 

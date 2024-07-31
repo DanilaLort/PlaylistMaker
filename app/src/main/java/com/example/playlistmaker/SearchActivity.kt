@@ -1,15 +1,13 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -17,23 +15,22 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import java.text.SimpleDateFormat
-import java.util.Locale
+import kotlin.Exception
+
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = ""
-    val trackList: ArrayList<Track> = ArrayList()
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +38,7 @@ class SearchActivity : AppCompatActivity() {
         findViewById<Button>(R.id.search_to_main).setOnClickListener {
             finish()
         }
+        val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.baseUrl))
             .addConverterFactory(GsonConverterFactory.create())
@@ -51,7 +49,21 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val editText = findViewById<EditText>(R.id.search_text_field)
         val buttonClear = findViewById<Button>(R.id.button_clear)
-        buttonClear.visibility = View.GONE
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && editText.text.isEmpty()) showSearchHistory(
+                recyclerView,
+                sharedPrefs
+                )
+            else showMessage(Message.VIEW_GONE)
+        }
+
+        findViewById<Button>(R.id.clear_history_button).setOnClickListener {
+            sharedPrefs.edit()
+                .putString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE)
+                .apply()
+            if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+            showMessage(Message.VIEW_GONE)
+        }
         val enqueueSample = object : Callback<TrackResponse> {
             override fun onResponse(
                 call: Call<TrackResponse>,
@@ -59,14 +71,14 @@ class SearchActivity : AppCompatActivity() {
             ) {
                 if (response.body()?.results?.isEmpty() == true) {
                     if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                    showMessage(R.string.nothing_was_found)
+                    showMessage(Message.NOTHING_WAS_FOUND)
                 } else {
-                    showMessage(View.GONE)
-                    if (response.body() != null) {
-                        val trackAdapter = TrackAdapter(response.body()!!.results)
+                    showMessage(Message.VIEW_GONE)
+                    if (response.body()?.results != null) {
+                        val trackAdapter = response.body()?.results?.let { TrackAdapter(it) }
                         recyclerView.adapter = trackAdapter
                         Log.d(
-                            "TRANSLATION_LOG",
+                            "TRACK_LOG",
                             "${response.body()?.results?.get(0)?.trackTime}"
                         )
                     }
@@ -75,7 +87,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
                 if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                showMessage(R.string.communication_problems)
+                showMessage(Message.COMMUNICATION_PROBLEMS)
             }
         }
         val textWatcher = object : TextWatcher {
@@ -92,6 +104,8 @@ class SearchActivity : AppCompatActivity() {
         }
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                showMessage(Message.VIEW_GONE)
+                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
                 if (!searchText.isNullOrEmpty()) getTrack.search(searchText)
                     .enqueue(enqueueSample)
                 true
@@ -101,9 +115,10 @@ class SearchActivity : AppCompatActivity() {
         editText.addTextChangedListener(textWatcher)
         buttonClear.setOnClickListener {
             editText.setText("")
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+            editText.clearFocus()
         }
         reloadButton.setOnClickListener {
             getTrack.search(reloadText)
@@ -126,31 +141,54 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT_DEF = ""
     }
 
+    private fun showSearchHistory(recyclerView: RecyclerView, sharedPrefs: SharedPreferences) {
+        val trackHistory = Gson().fromJson<ArrayList<Track>>(
+            sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE),
+            object : TypeToken<ArrayList<Track>>() {}.type
+        )
+        if (trackHistory.isNotEmpty()) {
+            showMessage(Message.SEARCH_HISTORY)
+            recyclerView.adapter = TrackAdapter(trackHistory)
+        }
+    }
+
     fun clearRecyclerView(adapter: TrackAdapter) {
         adapter.clearList()
     }
 
-    fun showMessage(textMessage: Int) {
-        val placeholderMessage = findViewById<LinearLayout>(R.id.placeholderMessage)
+    fun showMessage(messageType: Message) {
+        val placeholderMessage = findViewById<LinearLayout>(R.id.placeholder_message)
         val errorImage = findViewById<ImageView>(R.id.errorImage)
         val errorMessage = findViewById<TextView>(R.id.errorMessage)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
-        when (textMessage) {
-            R.string.nothing_was_found -> {
+        when (messageType) {
+            Message.NOTHING_WAS_FOUND -> {
                 reloadButton.visibility = View.GONE
                 placeholderMessage.visibility = View.VISIBLE
                 errorImage.setImageResource(R.drawable.nothing_was_found)
                 errorMessage.setText(R.string.nothing_was_found)
             }
-            R.string.communication_problems -> {
+            Message.COMMUNICATION_PROBLEMS -> {
                 placeholderMessage.visibility = View.VISIBLE
                 errorImage.setImageResource(R.drawable.communication_problems)
                 errorMessage.setText(R.string.communication_problems)
                 reloadButton.visibility = View.VISIBLE
             }
-            View.GONE -> {
+            Message.SEARCH_HISTORY -> {
+                findViewById<Button>(R.id.clear_history_button).visibility = View.VISIBLE
+                findViewById<TextView>(R.id.search_history_title).visibility = View.VISIBLE
+            }
+            Message.VIEW_GONE -> {
+                findViewById<Button>(R.id.clear_history_button).visibility = View.GONE
+                findViewById<TextView>(R.id.search_history_title).visibility = View.GONE
                 placeholderMessage.visibility = View.GONE
             }
         }
+    }
+    enum class Message {
+        NOTHING_WAS_FOUND,
+        COMMUNICATION_PROBLEMS,
+        SEARCH_HISTORY,
+        VIEW_GONE
     }
 }
