@@ -7,6 +7,7 @@
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorSecondaryVariant">@color/white</item>
         <item name="colorOnPrimaryContainer">@color/blackish_blue</item>
+        <item name="textColorGrey">@color/grey_B4</item>
         <item name="colorOtherScreens">@color/blackish_blue</item>
     </style>
 </resources>

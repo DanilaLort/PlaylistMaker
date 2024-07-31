@@ -12,10 +12,14 @@ data class Track (
     val trackTime: Long,
     val trackId: Int,
     val artworkUrl100: String,
+    val collectionName: String,
+    val releaseDate: String,
+    val primaryGenreName: String,
+    val country: String
 ) {
-    fun getTrackTime(): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
-    }
+    fun getTrackTime(): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
+
+    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
 
     override fun toString(): String {
         return "$trackName $trackId\n"
