@@ -9,7 +9,6 @@
         <item name="colorSecondaryVariant">@color/grey_EB</item>
         <item name="colorOnPrimaryContainer">@color/grey_B4</item>
         <item name="colorOtherScreens">@color/white</item>
-        <item name="textColorGrey">@color/grey_EB</item>
     </style>
 
 </resources>

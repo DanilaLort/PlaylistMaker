@@ -2,14 +2,11 @@ package com.example.playlistmaker
 
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.Serializable
 
 const val KEY_FOR_TRACK_HISTORY = "key_for_track_history"
 const val SEARCH_HISTORY_DEF_VALUE = "[]"
@@ -45,7 +42,7 @@ class TrackAdapter(
                 holder.itemView.context,
                 AudioPlayerActivity::class.java
             )
-            intent.putExtra("track", Gson().toJson(tracks[position]))
+            intent.putExtra(TRACK_INTENT_VALUE, Gson().toJson(tracks[position]))
             holder.itemView.context.startActivity(
                 intent
             )

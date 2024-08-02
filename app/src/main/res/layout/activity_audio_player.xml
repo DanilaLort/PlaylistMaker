@@ -77,11 +77,15 @@
 
     <TextView
         android:id="@+id/trackTittle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Yesterday (Remastered 2009)"
+        android:ellipsize="end"
         android:textColor="?attr/colorOnPrimary"
+        android:maxLines="1"
         android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="@id/rightGuideline"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/leftGuideline"
         app:layout_constraintTop_toBottomOf="@id/mediumGuideline" />
 
@@ -90,6 +94,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="The Beatles"
+        android:ellipsize="end"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/leftGuideline"
@@ -147,154 +152,109 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="@string/duration"
-        android:textColor="?attr/textColorGrey"
-        android:textSize="13sp"
+        android:textColor="@color/grey_B4"
         app:layout_constraintBottom_toTopOf="@id/album"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/album"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="@string/album"
-        android:textColor="?attr/textColorGrey"
-        android:textSize="13sp"
+        android:textColor="@color/grey_B4"
         app:layout_constraintBottom_toTopOf="@id/year"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="@string/year"
-        android:textColor="?attr/textColorGrey"
-        android:textSize="13sp"
+        android:textColor="@color/grey_B4"
         app:layout_constraintBottom_toTopOf="@id/genre"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/genre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="@string/genre"
-        android:textColor="?attr/textColorGrey"
-        android:textSize="13sp"
+        android:textColor="@color/grey_B4"
         app:layout_constraintBottom_toTopOf="@id/country"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/country"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="@string/country"
-        android:textColor="?attr/textColorGrey"
-        android:textSize="13sp"
+        android:textColor="@color/grey_B4"
         app:layout_constraintBottom_toTopOf="@id/bottomGuideline"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/trackCountry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:gravity="end"
         android:layout_marginEnd="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="Великобритания"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@id/bottomGuideline"
         app:layout_constraintStart_toEndOf="@id/textsBarrier"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/trackGenre"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:gravity="end"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="Rock"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@id/trackCountry"
         app:layout_constraintStart_toEndOf="@id/textsBarrier"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/trackYear"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:gravity="end"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="1965"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@id/trackGenre"
         app:layout_constraintStart_toEndOf="@id/textsBarrier"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/trackAlbum"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:gravity="end"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="Yesterday (Remastered 2009)"
         android:textColor="?attr/colorOnPrimary"
         android:ellipsize="end"
-        android:textSize="13sp"
-        android:maxLines="1"
-        android:lineHeight="1dp"
         app:layout_constraintBottom_toTopOf="@id/trackYear"
         app:layout_constraintStart_toEndOf="@id/textsBarrier"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
+        style="@style/descriptionText"
         android:id="@+id/trackDuration"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:gravity="end"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/ys_display_regular"
         android:text="5:35"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@id/trackAlbum"
         app:layout_constraintStart_toEndOf="@id/textsBarrier"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
