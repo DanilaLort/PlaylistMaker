@@ -123,13 +123,6 @@ class AudioPlayerActivity : AppCompatActivity() {
                     Locale.getDefault()).format(mediaPlayer.currentPosition
                     )
                 handler.postDelayed(this, Delay.ONE_SECOND_DELAY / 3)
-                Log.d(
-                    "TRACK_LOG",
-                    SimpleDateFormat(
-                        "mm:ss",
-                        Locale.getDefault()).format(mediaPlayer.currentPosition
-                    )
-                )
             }
         }
     }
