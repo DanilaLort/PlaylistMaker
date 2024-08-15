@@ -1,7 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context.MODE_PRIVATE
-import android.util.Log
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +38,14 @@ class TrackAdapter(
             sharedPrefs.edit()
                 .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(tracksHistory))
                 .apply()
+            val intent = Intent(
+                holder.itemView.context,
+                AudioPlayerActivity::class.java
+            )
+            intent.putExtra(TRACK_INTENT_VALUE, Gson().toJson(tracks[position]))
+            holder.itemView.context.startActivity(
+                intent
+            )
         }
     }
 

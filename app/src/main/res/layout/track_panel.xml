@@ -11,7 +11,7 @@
         android:layout_height="45dp"
         android:layout_marginStart="13dp"
         android:layout_gravity="start|center"
-        android:src="@drawable/ic_clear_button"/>
+        android:src="@drawable/ic_cover"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
