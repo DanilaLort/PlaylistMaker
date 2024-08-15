@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -13,7 +14,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,14 +25,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.Exception
 
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = ""
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var getTrack: TrackApi
-    private val searchRunnable = Runnable { searchRequest() }
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +43,9 @@ class SearchActivity : AppCompatActivity() {
             .baseUrl(getString(R.string.baseUrl))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        getTrack = retrofit.create(TrackApi::class.java)
+        val getTrack = retrofit.create(TrackApi::class.java)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
-        recyclerView = findViewById(R.id.trackList)
+        val recyclerView = findViewById<RecyclerView>(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val editText = findViewById<EditText>(R.id.search_text_field)
         val buttonClear = findViewById<Button>(R.id.button_clear)
@@ -59,38 +57,58 @@ class SearchActivity : AppCompatActivity() {
             else showMessage(Message.VIEW_GONE)
         }
 
-        findViewById<Button>(R.id.clearHistoryButton).setOnClickListener {
+        findViewById<Button>(R.id.clear_history_button).setOnClickListener {
             sharedPrefs.edit()
                 .putString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE)
                 .apply()
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
             showMessage(Message.VIEW_GONE)
         }
+        val enqueueSample = object : Callback<TrackResponse> {
+            override fun onResponse(
+                call: Call<TrackResponse>,
+                response: Response<TrackResponse>
+            ) {
+                if (response.body()?.results?.isEmpty() == true) {
+                    if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+                    showMessage(Message.NOTHING_WAS_FOUND)
+                } else {
+                    showMessage(Message.VIEW_GONE)
+                    if (response.body()?.results != null) {
+                        val trackAdapter = response.body()?.results?.let { TrackAdapter(it) }
+                        recyclerView.adapter = trackAdapter
+                        Log.d(
+                            "TRACK_LOG",
+                            "${response.body()?.results?.get(0)?.trackTime}"
+                        )
+                    }
+                }
+            }
 
+            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+                showMessage(Message.COMMUNICATION_PROBLEMS)
+            }
+        }
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 buttonClear.isVisible = !s.isNullOrEmpty()
-                if (s != null) {
-                    if (s.isNotEmpty()) {
-                        searchText = editText.text.toString()
-                        searchDebounce()
-                    }
-                    else handler.removeCallbacks(searchRunnable)
-                }
             }
 
             override fun afterTextChanged(s: Editable?) {
-
+                searchText = editText.text.toString()
             }
         }
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 showMessage(Message.VIEW_GONE)
                 if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                if (searchText.isNotEmpty()) searchRequest()
+                if (!searchText.isNullOrEmpty()) getTrack.search(searchText)
+                    .enqueue(enqueueSample)
+                true
             }
             false
         }
@@ -103,49 +121,9 @@ class SearchActivity : AppCompatActivity() {
             editText.clearFocus()
         }
         reloadButton.setOnClickListener {
-            searchText = reloadText
-            searchRequest()
+            getTrack.search(reloadText)
+                .enqueue(enqueueSample)
         }
-    }
-
-    private fun searchRequest() {
-        showMessage(Message.VIEW_GONE)
-        showMessage(Message.PROGRESS_BAR)
-        if (recyclerView.adapter != null) (recyclerView.adapter as TrackAdapter).clearList()
-        getTrack.search(searchText)
-            .enqueue(object : Callback<TrackResponse> {
-            override fun onResponse(
-                call: Call<TrackResponse>,
-                response: Response<TrackResponse>
-            ) {
-                showMessage(Message.VIEW_GONE)
-                if (response.body()?.results?.isEmpty() == true) {
-                    if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                    showMessage(Message.NOTHING_WAS_FOUND)
-                } else {
-                    if (response.body()?.results != null) {
-                        val trackAdapter = response.body()?.results?.let { TrackAdapter(it) }
-                        recyclerView.adapter = trackAdapter
-//                        Log.d(
-//                            "TRACK_LOG",
-//                            "${response.body()?.results?.get(0)?.trackTime}"
-//                        )
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                showMessage(Message.VIEW_GONE)
-                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                showMessage(Message.COMMUNICATION_PROBLEMS)
-                reloadText = searchText
-            }
-        })
-    }
-
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, Delay.TWO_SECOND_DELAY)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -183,7 +161,6 @@ class SearchActivity : AppCompatActivity() {
         val errorImage = findViewById<ImageView>(R.id.errorImage)
         val errorMessage = findViewById<TextView>(R.id.errorMessage)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
         when (messageType) {
             Message.NOTHING_WAS_FOUND -> {
                 reloadButton.visibility = View.GONE
@@ -198,17 +175,13 @@ class SearchActivity : AppCompatActivity() {
                 reloadButton.visibility = View.VISIBLE
             }
             Message.SEARCH_HISTORY -> {
-                findViewById<Button>(R.id.clearHistoryButton).visibility = View.VISIBLE
+                findViewById<Button>(R.id.clear_history_button).visibility = View.VISIBLE
                 findViewById<TextView>(R.id.search_history_title).visibility = View.VISIBLE
             }
             Message.VIEW_GONE -> {
-                findViewById<Button>(R.id.clearHistoryButton).visibility = View.GONE
+                findViewById<Button>(R.id.clear_history_button).visibility = View.GONE
                 findViewById<TextView>(R.id.search_history_title).visibility = View.GONE
                 placeholderMessage.visibility = View.GONE
-                progressBar.visibility = View.GONE
-            }
-            Message.PROGRESS_BAR -> {
-                progressBar.visibility = View.VISIBLE
             }
         }
     }
@@ -216,7 +189,6 @@ class SearchActivity : AppCompatActivity() {
         NOTHING_WAS_FOUND,
         COMMUNICATION_PROBLEMS,
         SEARCH_HISTORY,
-        VIEW_GONE,
-        PROGRESS_BAR
+        VIEW_GONE
     }
 }

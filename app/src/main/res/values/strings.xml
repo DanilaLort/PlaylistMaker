@@ -23,5 +23,4 @@
     <string name="genre">Жанр</string>
     <string name="year">Год</string>
     <string name="album">Альбом</string>
-    <string name="track_time">00:00</string>
 </resources>

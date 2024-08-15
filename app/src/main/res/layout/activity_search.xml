@@ -144,7 +144,7 @@
                 android:visibility="gone"/>
         </LinearLayout>
         <Button
-            android:id="@+id/clearHistoryButton"
+            android:id="@+id/clear_history_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -155,12 +155,4 @@
             android:text="@string/clear_history"
             android:visibility="gone"/>
     </FrameLayout>
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="150dp"
-        android:indeterminateTint="@color/blue"
-        android:visibility="gone"/>
 </LinearLayout>
