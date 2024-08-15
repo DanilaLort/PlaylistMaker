@@ -73,9 +73,9 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
         mediaPlayer.setOnCompletionListener {
             buttonPlay.setImageResource(R.drawable.ic_button_play)
-            playerState = STATE_PREPARED
-            trackTime.setText(R.string.track_time)
             stopTimeTask()
+            trackTime.setText(R.string.track_time)
+            playerState = STATE_PREPARED
         }
     }
 
@@ -91,8 +91,8 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun pausePlayer() {
         mediaPlayer.pause()
-        buttonPlay.setImageResource(R.drawable.ic_button_play)
         stopTimeTask()
+        buttonPlay.setImageResource(R.drawable.ic_button_play)
         playerState = STATE_PAUSED
 //        Log.d(
 //            "TRACK_LOG",
@@ -125,10 +125,10 @@ class AudioPlayerActivity : AppCompatActivity() {
                 handler.postDelayed(this, Delay.ONE_SECOND_DELAY / 3)
                 Log.d(
                     "TRACK_LOG",
-                    "${SimpleDateFormat(
+                    SimpleDateFormat(
                         "mm:ss",
                         Locale.getDefault()).format(mediaPlayer.currentPosition
-                    )}"
+                    )
                 )
             }
         }
