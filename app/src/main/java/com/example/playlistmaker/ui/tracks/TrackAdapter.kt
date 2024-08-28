@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.tracks
 
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
@@ -7,6 +7,11 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.activity.AudioPlayerActivity
+import com.example.playlistmaker.ui.activity.SHARED_PREFERENCES
+import com.example.playlistmaker.ui.activity.TRACK_INTENT_VALUE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

@@ -1,8 +1,7 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.activity
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,24 +14,29 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.Resource
+import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.tracks.Delay
+import com.example.playlistmaker.ui.tracks.KEY_FOR_TRACK_HISTORY
+import com.example.playlistmaker.ui.tracks.SEARCH_HISTORY_DEF_VALUE
+import com.example.playlistmaker.ui.tracks.TrackAdapter
+import com.example.playlistmaker.ui.tracks.handler
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = ""
     private lateinit var recyclerView: RecyclerView
-    private lateinit var getTrack: TrackApi
-    private val searchRunnable = Runnable { searchRequest() }
+    private val searchRunnable = Runnable { searchRequest(searchText) }
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,11 +45,6 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
         val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
-        val retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.baseUrl))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        getTrack = retrofit.create(TrackApi::class.java)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
         recyclerView = findViewById(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -90,7 +89,7 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 showMessage(Message.VIEW_GONE)
                 if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                if (searchText.isNotEmpty()) searchRequest()
+                if (searchText.isNotEmpty()) searchRequest(searchText)
             }
             false
         }
@@ -103,42 +102,32 @@ class SearchActivity : AppCompatActivity() {
             editText.clearFocus()
         }
         reloadButton.setOnClickListener {
-            searchText = reloadText
-            searchRequest()
+            searchRequest(reloadText)
         }
+
     }
 
-    private fun searchRequest() {
+    private fun searchRequest(text: String) {
         showMessage(Message.VIEW_GONE)
         showMessage(Message.PROGRESS_BAR)
-        if (recyclerView.adapter != null) (recyclerView.adapter as TrackAdapter).clearList()
-        getTrack.search(searchText)
-            .enqueue(object : Callback<TrackResponse> {
-            override fun onResponse(
-                call: Call<TrackResponse>,
-                response: Response<TrackResponse>
-            ) {
-                showMessage(Message.VIEW_GONE)
-                if (response.body()?.results?.isEmpty() == true) {
-                    if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                    showMessage(Message.NOTHING_WAS_FOUND)
+        Creator.provideTracksInteractor().searchMovies(text, object : TracksInteractor.TracksConsumer {
+            override fun consume(foundTracks: Resource<List<Track>>) {
+                if (foundTracks is Resource.Success) {
+                    val results = foundTracks.data as ArrayList<Track>
+                    handler.post {
+                        if (results.isNotEmpty()) recyclerView.adapter = TrackAdapter(results)
+                        else {
+                            showMessage(Message.VIEW_GONE)
+                            showMessage(Message.NOTHING_WAS_FOUND)
+                        }
+                    }
                 } else {
-                    if (response.body()?.results != null) {
-                        val trackAdapter = response.body()?.results?.let { TrackAdapter(it) }
-                        recyclerView.adapter = trackAdapter
-//                        Log.d(
-//                            "TRACK_LOG",
-//                            "${response.body()?.results?.get(0)?.trackTime}"
-//                        )
+                    handler.post {
+                        showMessage(Message.VIEW_GONE)
+                        showMessage(Message.COMMUNICATION_PROBLEMS)
+                        reloadText = text
                     }
                 }
-            }
-
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                showMessage(Message.VIEW_GONE)
-                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-                showMessage(Message.COMMUNICATION_PROBLEMS)
-                reloadText = searchText
             }
         })
     }
@@ -155,7 +144,9 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        findViewById<EditText>(R.id.search_text_field).setText(savedInstanceState.getString(SEARCH_TEXT, SEARCH_TEXT_DEF))
+        findViewById<EditText>(R.id.search_text_field).setText(savedInstanceState.getString(
+            SEARCH_TEXT, SEARCH_TEXT_DEF
+        ))
     }
 
     private companion object {
@@ -174,7 +165,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    fun clearRecyclerView(adapter: TrackAdapter) {
+    private fun clearRecyclerView(adapter: TrackAdapter) {
         adapter.clearList()
     }
 
@@ -206,6 +197,7 @@ class SearchActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.search_history_title).visibility = View.GONE
                 placeholderMessage.visibility = View.GONE
                 progressBar.visibility = View.GONE
+                if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
             }
             Message.PROGRESS_BAR -> {
                 progressBar.visibility = View.VISIBLE

@@ -1,14 +1,17 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.activity
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.ui.tracks.Delay
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.tracks.handler
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -40,7 +43,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.trackCover).setImageResource(R.drawable.ic_cover)
         findViewById<TextView>(R.id.trackTittle).text = track.trackName
         findViewById<TextView>(R.id.artistName).text = track.artistName
-        findViewById<TextView>(R.id.trackDuration).text = track.getTrackTime()
+        findViewById<TextView>(R.id.trackDuration).text = track.trackTime
         findViewById<TextView>(R.id.trackAlbum).text = track.collectionName
         findViewById<TextView>(R.id.trackGenre).text = track.primaryGenreName
         findViewById<TextView>(R.id.trackYear).text = track.releaseDate.substring(0, 4)

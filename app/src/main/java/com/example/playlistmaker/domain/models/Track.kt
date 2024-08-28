@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.domain.models
 
 import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
@@ -8,7 +8,7 @@ data class Track (
     val trackName: String,
     val artistName: String,
     @SerializedName("trackTimeMillis")
-    val trackTime: Long,
+    val trackTime: String,
     val trackId: Int,
     val artworkUrl100: String?,
     val collectionName: String,
@@ -17,7 +17,6 @@ data class Track (
     val country: String,
     val previewUrl: String
 ) {
-    fun getTrackTime(): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
 
     fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/',"512x512bb.jpg")
 
