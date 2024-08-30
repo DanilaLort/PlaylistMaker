@@ -9,15 +9,13 @@ import android.widget.Button
 import com.example.playlistmaker.ui.theme.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.data.manager.ThemeManager
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var themeManager : ThemeManager
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        themeManager = Creator.getThemeManager(this)
+        val themeManager = Creator.getThemeManager(this)
         setContentView(R.layout.activity_settings)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
         findViewById<Button>(R.id.settings_to_main).setOnClickListener {
