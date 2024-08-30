@@ -5,15 +5,16 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import com.example.playlistmaker.ui.theme.App
 import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
-        (applicationContext as App).switchTheme(sharedPrefs.getBoolean(KEY_FOR_THEME, false))
+        (applicationContext as App).switchTheme(Creator.getThemeManager(this).getValue())
         findViewById<Button>(R.id.button_search).setOnClickListener {
             startActivity(
                 Intent(

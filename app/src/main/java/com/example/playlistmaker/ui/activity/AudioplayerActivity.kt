@@ -19,7 +19,6 @@ import java.util.Locale
 const val TRACK_INTENT_VALUE = "TRACK_INTENT_VALUE"
 
 class AudioPlayerActivity : AppCompatActivity() {
-    private lateinit var url: String
     private lateinit var buttonPlay: ImageButton
     private lateinit var trackTime: TextView
     private var playerState = STATE_DEFAULT
@@ -30,7 +29,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
         val track = Gson().fromJson(intent.getStringExtra(TRACK_INTENT_VALUE), Track::class.java)
-        url = track.previewUrl
+        val url = track.previewUrl
 
         buttonPlay = findViewById(R.id.buttonPlay)
         findViewById<ImageButton>(R.id.returnButton).setOnClickListener {
@@ -53,7 +52,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_cover)
             .transform(RoundedCorners(16))
             .into(findViewById(R.id.trackCover))
-        preparePlayer()
+        preparePlayer(url)
     }
 
     override fun onPause() {
@@ -67,7 +66,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         stopTimeTask()
     }
 
-    private fun preparePlayer() {
+    private fun preparePlayer(url: String) {
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -82,7 +81,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
-        private fun startPlayer() {
+    private fun startPlayer() {
         mediaPlayer.start()
         buttonPlay.setImageResource(R.drawable.ic_button_pause)
             playerState = STATE_PLAYING
@@ -97,10 +96,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         stopTimeTask()
         buttonPlay.setImageResource(R.drawable.ic_button_play)
         playerState = STATE_PAUSED
-//        Log.d(
-//            "TRACK_LOG",
-//            "$timerTask"
-//        )
     }
 
     private fun stopTimeTask() {

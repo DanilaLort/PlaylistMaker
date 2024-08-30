@@ -1,6 +1,9 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.creator
 
-import com.example.playlistmaker.data.TracksRepositoryImpl
+import android.content.Context
+import com.example.playlistmaker.data.impl.TracksRepositoryImpl
+import com.example.playlistmaker.data.manager.ThemeManager
+import com.example.playlistmaker.data.manager.TrackManager
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.domain.api.TracksRepository
@@ -13,5 +16,13 @@ object Creator {
 
     fun provideTracksInteractor(): TracksInteractor {
         return TracksInteractorImpl(getTracksRepository())
+    }
+
+    fun getTrackManager(context: Context): TrackManager {
+        return TrackManager(context)
+    }
+
+    fun getThemeManager(context: Context): ThemeManager {
+        return ThemeManager(context)
     }
 }

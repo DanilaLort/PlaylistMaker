@@ -6,18 +6,19 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import com.example.playlistmaker.ui.theme.App
 import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.data.manager.ThemeManager
 import com.google.android.material.switchmaterial.SwitchMaterial
 
-const val SHARED_PREFERENCES = "preference_for_settings"
-const val KEY_FOR_THEME = "key_for_theme"
-
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var themeManager : ThemeManager
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        themeManager = Creator.getThemeManager(this)
         setContentView(R.layout.activity_settings)
-        val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
         findViewById<Button>(R.id.settings_to_main).setOnClickListener {
             finish()
@@ -49,11 +50,9 @@ class SettingsActivity : AppCompatActivity() {
         }
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
-           sharedPrefs.edit()
-               .putBoolean(KEY_FOR_THEME, checked)
-               .apply()
+            themeManager.saveValue(checked)
         }
-        themeSwitcher.isChecked = sharedPrefs.getBoolean(KEY_FOR_THEME, false)
+        themeSwitcher.isChecked = themeManager.getValue()
     }
 }
 

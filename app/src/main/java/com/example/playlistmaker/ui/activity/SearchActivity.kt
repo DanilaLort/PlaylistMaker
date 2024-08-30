@@ -1,7 +1,6 @@
 package com.example.playlistmaker.ui.activity
 
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,18 +17,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.data.manager.TrackManager
 import com.example.playlistmaker.domain.Resource
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.tracks.Delay
-import com.example.playlistmaker.ui.tracks.KEY_FOR_TRACK_HISTORY
-import com.example.playlistmaker.ui.tracks.SEARCH_HISTORY_DEF_VALUE
 import com.example.playlistmaker.ui.tracks.TrackAdapter
 import com.example.playlistmaker.ui.tracks.handler
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 
 class SearchActivity : AppCompatActivity() {
@@ -37,32 +33,28 @@ class SearchActivity : AppCompatActivity() {
     private var reloadText = ""
     private lateinit var recyclerView: RecyclerView
     private val searchRunnable = Runnable { searchRequest(searchText) }
+    private lateinit var trackManager: TrackManager
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        trackManager = Creator.getTrackManager(this)
         setContentView(R.layout.activity_search)
         findViewById<Button>(R.id.search_to_main).setOnClickListener {
             finish()
         }
-        val sharedPrefs = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
         val reloadButton = findViewById<Button>(R.id.reloadButton)
         recyclerView = findViewById(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val editText = findViewById<EditText>(R.id.search_text_field)
         val buttonClear = findViewById<Button>(R.id.button_clear)
         editText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && editText.text.isEmpty()) showSearchHistory(
-                recyclerView,
-                sharedPrefs
-                )
+            if (hasFocus && editText.text.isEmpty()) showSearchHistory(recyclerView)
             else showMessage(Message.VIEW_GONE)
         }
 
         findViewById<Button>(R.id.clearHistoryButton).setOnClickListener {
-            sharedPrefs.edit()
-                .putString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE)
-                .apply()
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
+            trackManager.clearTrackHistory()
             showMessage(Message.VIEW_GONE)
         }
 
@@ -154,11 +146,8 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT_DEF = ""
     }
 
-    private fun showSearchHistory(recyclerView: RecyclerView, sharedPrefs: SharedPreferences) {
-        val trackHistory = Gson().fromJson<ArrayList<Track>>(
-            sharedPrefs.getString(KEY_FOR_TRACK_HISTORY, SEARCH_HISTORY_DEF_VALUE),
-            object : TypeToken<ArrayList<Track>>() {}.type
-        )
+    private fun showSearchHistory(recyclerView: RecyclerView) {
+        val trackHistory = trackManager.getValue() as ArrayList<Track>
         if (trackHistory.isNotEmpty()) {
             showMessage(Message.SEARCH_HISTORY)
             recyclerView.adapter = TrackAdapter(trackHistory)
