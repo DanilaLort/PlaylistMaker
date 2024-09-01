@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,25 +20,56 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.data.manager.TrackManager
 import com.example.playlistmaker.domain.Resource
-import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.impl.ValueManagerInteractorImpl
+import com.example.playlistmaker.domain.interactor.TracksInteractor
+import com.example.playlistmaker.domain.interactor.ValueManagerInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.tracks.Delay
+import com.example.playlistmaker.ui.tracks.SEARCH_HISTORY_SIZE
 import com.example.playlistmaker.ui.tracks.TrackAdapter
 import com.example.playlistmaker.ui.tracks.handler
+import com.google.gson.Gson
 
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = SEARCH_TEXT_DEF
-    private var reloadText = ""
+    private var reloadText = SEARCH_TEXT_DEF
     private lateinit var recyclerView: RecyclerView
     private val searchRunnable = Runnable { searchRequest(searchText) }
-    private lateinit var trackManager: TrackManager
+    private lateinit var trackManagerInteractor: ValueManagerInteractorImpl<List<Track>>
+    private val trackInteractor = Creator.provideTracksInteractor()
+    private val trackAdapter = TrackAdapter { tracks, position ->
+        if (clickDebounce()) {
+            trackManagerInteractor.saveValue(object : ValueManagerInteractor.ValueConsumer<List<Track>> {
+                override fun consume(): List<Track> {
+                    val tracksHistory: ArrayList<Track> = ArrayList()
+                    val savedHistory = trackManagerInteractor.getValue()
+                    if (savedHistory.isNotEmpty()) tracksHistory.addAll(
+                        savedHistory
+                    )
+                    if (tracksHistory.contains(tracks[position])) tracksHistory.remove(tracks[position])
+                    tracksHistory.add(0, tracks[position])
+                    if (tracksHistory.size > SEARCH_HISTORY_SIZE) tracksHistory.removeAt(
+                        SEARCH_HISTORY_SIZE - 1
+                    )
+                    return tracksHistory
+                }
+            })
+            val intent = Intent(
+                this,
+                AudioPlayerActivity::class.java
+            )
+            intent.putExtra(TRACK_INTENT_VALUE, Gson().toJson(tracks[position]))
+            this.startActivity(
+                intent
+            )
+        }
+    }
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        trackManager = Creator.getTrackManager(this)
+        trackManagerInteractor = Creator.provideTrackManagerInteractor(this)
         setContentView(R.layout.activity_search)
         findViewById<Button>(R.id.search_to_main).setOnClickListener {
             finish()
@@ -54,7 +86,11 @@ class SearchActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.clearHistoryButton).setOnClickListener {
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-            trackManager.clearTrackHistory()
+            trackManagerInteractor.saveValue(object : ValueManagerInteractor.ValueConsumer<List<Track>> {
+                override fun consume(): List<Track> {
+                    return emptyList()
+                }
+            })
             showMessage(Message.VIEW_GONE)
         }
 
@@ -87,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
         }
         editText.addTextChangedListener(textWatcher)
         buttonClear.setOnClickListener {
-            editText.setText("")
+            editText.setText(SEARCH_TEXT_DEF)
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
@@ -102,12 +138,13 @@ class SearchActivity : AppCompatActivity() {
     private fun searchRequest(text: String) {
         showMessage(Message.VIEW_GONE)
         showMessage(Message.PROGRESS_BAR)
-        Creator.provideTracksInteractor().searchMovies(text, object : TracksInteractor.TracksConsumer {
+        trackInteractor.searchMovies(text, object : TracksInteractor.TracksConsumer {
             override fun consume(foundTracks: Resource<List<Track>>) {
                 if (foundTracks is Resource.Success) {
                     val results = foundTracks.data as ArrayList<Track>
                     handler.post {
-                        if (results.isNotEmpty()) recyclerView.adapter = TrackAdapter(results)
+                        trackAdapter.tracks = results
+                        if (results.isNotEmpty()) recyclerView.adapter = trackAdapter
                         else {
                             showMessage(Message.VIEW_GONE)
                             showMessage(Message.NOTHING_WAS_FOUND)
@@ -147,10 +184,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showSearchHistory(recyclerView: RecyclerView) {
-        val trackHistory = trackManager.getValue() as ArrayList<Track>
+        val trackHistory = trackManagerInteractor.getValue() as ArrayList<Track>
         if (trackHistory.isNotEmpty()) {
             showMessage(Message.SEARCH_HISTORY)
-            recyclerView.adapter = TrackAdapter(trackHistory)
+            trackAdapter.tracks = trackHistory
+            recyclerView.adapter = trackAdapter
         }
     }
 
@@ -193,6 +231,17 @@ class SearchActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, Delay.ONE_SECOND_DELAY)
+        }
+        return current
+    }
+
+    private var isClickAllowed = true
     enum class Message {
         NOTHING_WAS_FOUND,
         COMMUNICATION_PROBLEMS,

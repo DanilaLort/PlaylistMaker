@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui.theme
+package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate

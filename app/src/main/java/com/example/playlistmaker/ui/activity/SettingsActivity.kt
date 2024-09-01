@@ -6,16 +6,17 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import com.example.playlistmaker.ui.theme.App
+import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.domain.interactor.ValueManagerInteractor
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val themeManager = Creator.getThemeManager(this)
+        val themeManagerInteractor = Creator.provideThemeManagerInteractor(this)
         setContentView(R.layout.activity_settings)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
         findViewById<Button>(R.id.settings_to_main).setOnClickListener {
@@ -48,9 +49,13 @@ class SettingsActivity : AppCompatActivity() {
         }
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
-            themeManager.saveValue(checked)
+            themeManagerInteractor.saveValue(object : ValueManagerInteractor.ValueConsumer<Boolean> {
+                override fun consume(): Boolean {
+                    return checked
+                }
+            })
         }
-        themeSwitcher.isChecked = themeManager.getValue()
+        themeSwitcher.isChecked = themeManagerInteractor.getValue()
     }
 }
 

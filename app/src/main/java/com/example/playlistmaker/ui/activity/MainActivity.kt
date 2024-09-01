@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import com.example.playlistmaker.ui.theme.App
+import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        (applicationContext as App).switchTheme(Creator.getThemeManager(this).getValue())
+        (applicationContext as App).switchTheme(Creator.provideThemeManagerInteractor(this).getValue())
         findViewById<Button>(R.id.button_search).setOnClickListener {
             startActivity(
                 Intent(

@@ -1,18 +1,19 @@
-package com.example.playlistmaker.data.manager
+package com.example.playlistmaker.data.impl
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import com.example.playlistmaker.domain.repository.ValueManagerRepository
 
-class ThemeManager(context: Context){
+class ThemeManagerRepositoryImpl(context: Context) : ValueManagerRepository<Boolean> {
     private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
 
-    fun saveValue(themeMode: Boolean) {
+    override fun saveValue(themeMode: Boolean) {
         sharedPrefs.edit()
             .putBoolean(KEY_FOR_THEME, themeMode)
             .apply()
     }
 
-    fun getValue() : Boolean {
+    override fun getValue() : Boolean {
         return sharedPrefs.getBoolean(KEY_FOR_THEME, false)
     }
     private companion object {

@@ -10,7 +10,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.R
+import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.usecase.MediaPlayerPrepareUseCase
 import com.example.playlistmaker.ui.tracks.handler
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -22,8 +24,18 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var buttonPlay: ImageButton
     private lateinit var trackTime: TextView
     private var playerState = STATE_DEFAULT
-    private var mediaPlayer = MediaPlayer()
+    private lateinit var mediaPlayer: MediaPlayer
     private lateinit var timerTask: Runnable
+    private val onCompletionListener = MediaPlayerPrepareUseCase.OnCompletionListener {
+        buttonPlay.setImageResource(R.drawable.ic_button_play)
+        stopTimeTask()
+        trackTime.setText(R.string.track_time)
+        playerState = STATE_PREPARED
+    }
+    private val preparedListener = MediaPlayerPrepareUseCase.PreparedListener {
+        buttonPlay.isEnabled = true
+        playerState = STATE_PREPARED
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +64,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_cover)
             .transform(RoundedCorners(16))
             .into(findViewById(R.id.trackCover))
-        preparePlayer(url)
+        mediaPlayer = Creator.provideMediaPlayerPrepareUseCase(url, preparedListener, onCompletionListener).prepareMediaPlayer()
     }
 
     override fun onPause() {
@@ -64,21 +76,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         super.onDestroy()
         mediaPlayer.release()
         stopTimeTask()
-    }
-
-    private fun preparePlayer(url: String) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            buttonPlay.isEnabled = true
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            buttonPlay.setImageResource(R.drawable.ic_button_play)
-            stopTimeTask()
-            trackTime.setText(R.string.track_time)
-            playerState = STATE_PREPARED
-        }
     }
 
     private fun startPlayer() {
