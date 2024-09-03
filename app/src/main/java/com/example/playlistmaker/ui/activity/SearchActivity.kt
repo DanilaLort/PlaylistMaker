@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.Resource
-import com.example.playlistmaker.domain.impl.ValueManagerInteractorImpl
 import com.example.playlistmaker.domain.interactor.TracksInteractor
 import com.example.playlistmaker.domain.interactor.ValueManagerInteractor
 import com.example.playlistmaker.domain.models.Track
@@ -37,7 +36,7 @@ class SearchActivity : AppCompatActivity() {
     private var reloadText = SEARCH_TEXT_DEF
     private lateinit var recyclerView: RecyclerView
     private val searchRunnable = Runnable { searchRequest(searchText) }
-    private lateinit var trackManagerInteractor: ValueManagerInteractorImpl<List<Track>>
+    private lateinit var trackManagerInteractor: ValueManagerInteractor<List<Track>>
     private val trackInteractor = Creator.provideTracksInteractor()
     private val trackAdapter = TrackAdapter { tracks, position ->
         if (clickDebounce()) {
@@ -138,7 +137,7 @@ class SearchActivity : AppCompatActivity() {
     private fun searchRequest(text: String) {
         showMessage(Message.VIEW_GONE)
         showMessage(Message.PROGRESS_BAR)
-        trackInteractor.searchMovies(text, object : TracksInteractor.TracksConsumer {
+        trackInteractor.searchTrack(text, object : TracksInteractor.TracksConsumer {
             override fun consume(foundTracks: Resource<List<Track>>) {
                 if (foundTracks is Resource.Success) {
                     val results = foundTracks.data as ArrayList<Track>
