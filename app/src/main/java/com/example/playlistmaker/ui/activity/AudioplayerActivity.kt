@@ -1,6 +1,5 @@
 package com.example.playlistmaker.ui.activity
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -10,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.domain.interactor.MediaPlayerInteractor
+import com.example.playlistmaker.domain.api.MediaPlayerInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.ui.tracks.handler
@@ -51,8 +50,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_cover)
             .transform(RoundedCorners(16))
             .into(findViewById(R.id.trackCover))
-//        mediaPlayer = Creator.provideMediaPlayerPrepareUseCase(url, preparedListener, onCompletionListener).prepareMediaPlayer()
-        mediaPlayerInteractor = Creator.provideMediaPlayerInteractor(prepareMediaPlayer(url))
+        mediaPlayerInteractor = Creator.provideMediaPlayerInteractor(url)
+        prepareMediaPlayer()
     }
 
     override fun onPause() {
@@ -66,43 +65,36 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayerInteractor.destroy()
     }
 
-    private fun prepareMediaPlayer(url: String) : MediaPlayer {
-        val mediaPlayer = MediaPlayer()
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
+    private fun prepareMediaPlayer() {
+        mediaPlayerInteractor.preparedListener {
             stopTimeTask()
             buttonPlay.setImageResource(R.drawable.ic_button_play)
             trackTime.setText(R.string.track_time)
         }
-        mediaPlayer.setOnCompletionListener {
+        mediaPlayerInteractor.completionListener {
             stopTimeTask()
             buttonPlay.setImageResource(R.drawable.ic_button_play)
             trackTime.setText(R.string.track_time)
+            mediaPlayerInteractor.setStatePrepared()
         }
-        return mediaPlayer
+        mediaPlayerInteractor.setStatePrepared()
     }
 
     private fun startPlayer() {
-        mediaPlayerInteractor.start(object : MediaPlayerInteractor.MediaPlayerConsumer {
-            override fun consume() {
-                buttonPlay.setImageResource(R.drawable.ic_button_pause)
-                timerTask = createUpdateTimerTask()
-                handler.post(
-                    timerTask
-                )
-            }
-        })
+        mediaPlayerInteractor.start {
+            buttonPlay.setImageResource(R.drawable.ic_button_pause)
+            timerTask = createUpdateTimerTask()
+            handler.post(
+                timerTask
+            )
+        }
     }
 
     private fun pausePlayer() {
-        mediaPlayerInteractor.pause(object : MediaPlayerInteractor.MediaPlayerConsumer {
-            override fun consume() {
-                stopTimeTask()
-                buttonPlay.setImageResource(R.drawable.ic_button_play)
-            }
-
-        })
+        stopTimeTask()
+        mediaPlayerInteractor.pause {
+            buttonPlay.setImageResource(R.drawable.ic_button_play)
+        }
     }
 
     private fun stopTimeTask() {
@@ -114,7 +106,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             STATE_PLAYING -> {
                 pausePlayer()
             }
-            STATE_DEFAULT, STATE_PAUSED -> {
+            STATE_PREPARED, STATE_PAUSED -> {
                 startPlayer()
             }
         }
@@ -128,10 +120,9 @@ class AudioPlayerActivity : AppCompatActivity() {
             }
         }
     }
-
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PLAYING = 1
-        private const val STATE_PAUSED = 2
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
     }
 }

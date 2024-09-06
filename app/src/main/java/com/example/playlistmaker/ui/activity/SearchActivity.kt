@@ -21,8 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.Resource
-import com.example.playlistmaker.domain.interactor.TracksInteractor
-import com.example.playlistmaker.domain.interactor.ValueManagerInteractor
+import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.api.ValueManagerInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.ui.tracks.SEARCH_HISTORY_SIZE

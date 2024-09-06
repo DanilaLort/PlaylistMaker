@@ -1,13 +1,13 @@
 package com.example.playlistmaker.data.impl
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context.MODE_PRIVATE
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.repository.ValueManagerRepository
+import com.example.playlistmaker.domain.api.ValueManagerRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 class TrackManagerRepositoryImpl(context: Context) : ValueManagerRepository<List<Track>> {
-    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, AppCompatActivity.MODE_PRIVATE)
+    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
     private val gson = Gson()
     private val trackListType = object : TypeToken<ArrayList<Track>>() {}.type
    override fun saveValue(value: List<Track>) {

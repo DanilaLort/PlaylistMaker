@@ -1,4 +1,4 @@
-package com.example.playlistmaker.domain.interactor
+package com.example.playlistmaker.domain.api
 
 interface ValueManagerInteractor<T> {
     fun getValue(): T

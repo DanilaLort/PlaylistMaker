@@ -1,4 +1,4 @@
-package com.example.playlistmaker.domain.interactor
+package com.example.playlistmaker.domain.api
 
 interface MediaPlayerInteractor {
     fun start(consumer: MediaPlayerConsumer)
@@ -6,7 +6,10 @@ interface MediaPlayerInteractor {
     fun destroy()
     fun getCurrentPosition(): String
     fun getState(): Int
-    interface MediaPlayerConsumer {
+    fun setStatePrepared()
+    fun preparedListener(consumer: MediaPlayerConsumer)
+    fun completionListener(consumer: MediaPlayerConsumer)
+    fun interface MediaPlayerConsumer {
         fun consume()
     }
 }

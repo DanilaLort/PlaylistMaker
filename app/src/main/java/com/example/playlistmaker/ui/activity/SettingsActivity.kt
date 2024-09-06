@@ -9,7 +9,7 @@ import android.widget.Button
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.domain.interactor.ValueManagerInteractor
+import com.example.playlistmaker.domain.api.ValueManagerInteractor
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {

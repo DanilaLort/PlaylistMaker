@@ -4,7 +4,7 @@ import com.example.playlistmaker.data.dto.TrackResponse
 import com.example.playlistmaker.data.dto.TrackSearchRequest
 import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.Resource
-import com.example.playlistmaker.domain.repository.TracksRepository
+import com.example.playlistmaker.domain.api.TracksRepository
 import com.example.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale

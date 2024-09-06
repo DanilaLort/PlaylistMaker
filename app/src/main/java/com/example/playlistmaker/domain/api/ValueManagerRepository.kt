@@ -1,4 +1,4 @@
-package com.example.playlistmaker.domain.repository
+package com.example.playlistmaker.domain.api
 
 interface ValueManagerRepository<T> {
     fun saveValue(value: T)

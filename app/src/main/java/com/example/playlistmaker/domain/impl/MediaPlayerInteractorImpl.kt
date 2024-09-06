@@ -1,7 +1,7 @@
 package com.example.playlistmaker.domain.impl
 
-import com.example.playlistmaker.domain.interactor.MediaPlayerInteractor
-import com.example.playlistmaker.domain.repository.MediaPlayerRepository
+import com.example.playlistmaker.domain.api.MediaPlayerInteractor
+import com.example.playlistmaker.domain.api.MediaPlayerRepository
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -30,6 +30,18 @@ class MediaPlayerInteractorImpl (
 
     override fun getState(): Int {
         return mediaPlayerRepository.getState()
+    }
+
+    override fun setStatePrepared() {
+        mediaPlayerRepository.setStatePrepared()
+    }
+
+    override fun preparedListener(consumer: MediaPlayerInteractor.MediaPlayerConsumer) {
+        mediaPlayerRepository.preparedListener { consumer.consume() }
+    }
+
+    override fun completionListener(consumer: MediaPlayerInteractor.MediaPlayerConsumer) {
+        mediaPlayerRepository.completionListener { consumer.consume() }
     }
 
 }

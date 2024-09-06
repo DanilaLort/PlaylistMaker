@@ -1,17 +1,12 @@
 package com.example.playlistmaker.ui.tracks
 
-import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.ui.activity.AudioPlayerActivity
-import com.example.playlistmaker.ui.activity.TRACK_INTENT_VALUE
-import com.google.gson.Gson
 
 const val SEARCH_HISTORY_SIZE = 10
 
