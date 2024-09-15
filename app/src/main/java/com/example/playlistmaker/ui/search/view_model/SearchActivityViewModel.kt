@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -52,31 +51,23 @@ class SearchActivityViewModel(application: Application) : AndroidViewModel(appli
         trackManagerRepository.saveValue(emptyList())
     }
     fun searchDebounce(changedText: String) {
-        try {
-            if (latestSearchText == changedText) {
-                return
-            }
-            this.latestSearchText = changedText
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-            val searchRunnable = Runnable { searchRequest(changedText) }
-
-            val postTime = SystemClock.uptimeMillis() + Delay.TWO_SECOND_DELAY
-            handler.postAtTime(
-                searchRunnable,
-                SEARCH_REQUEST_TOKEN,
-                postTime,
-            )
-        } catch (e: Exception) {
-            Log.d("searchRequest", "searchDebounce - ${e.message}")
+        if (latestSearchText == changedText) {
+            return
         }
+        this.latestSearchText = changedText
+        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        val searchRunnable = Runnable { searchRequest(changedText) }
+
+        val postTime = SystemClock.uptimeMillis() + Delay.TWO_SECOND_DELAY
+        handler.postAtTime(
+            searchRunnable,
+            SEARCH_REQUEST_TOKEN,
+            postTime,
+            )
     }
     private fun searchRequest(text: String) {
-        try {
-            trackState.postValue(TrackState.Loading)
-            trackInteractor.searchTrack(
-                text
-            ) { foundTracks: Resource<List<Track>> ->
+        trackState.postValue(TrackState.Loading)
+        trackInteractor.searchTrack(text) { foundTracks: Resource<List<Track>> ->
                 if (foundTracks is Resource.Success) {
                     if (foundTracks.data.isEmpty()) trackState.postValue(TrackState.Empty)
                     else {
@@ -86,9 +77,6 @@ class SearchActivityViewModel(application: Application) : AndroidViewModel(appli
                     trackState.postValue(TrackState.Error(foundTracks.message))
                 }
             }
-        } catch (e: Exception) {
-            Log.d("searchRequest", "searchRequest - ${e.message}")
-        }
     }
     companion object {
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
