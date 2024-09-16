@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.ui.settings.view_model.SettingViewModel
@@ -54,7 +53,6 @@ class SettingsActivity : AppCompatActivity() {
         }
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
             viewModel.saveThemeState(checked)
-            (applicationContext as App).switchTheme(checked)
         }
     }
 }

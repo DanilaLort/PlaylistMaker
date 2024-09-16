@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.ui.player.activity.AudioPlayerActivity
-import com.example.playlistmaker.ui.player.activity.TRACK_INTENT_VALUE
 import com.example.playlistmaker.ui.search.view_model.SearchActivityViewModel
 import com.example.playlistmaker.ui.search.view_model.TrackState
 import com.example.playlistmaker.ui.tracks.Delay
@@ -154,23 +153,18 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showMessage(messageType: Message) {
-        val placeholderMessage = binding.placeholderMessage
-        val errorImage = binding.errorImage
-        val errorMessage = binding.errorMessage
-        val reloadButton = binding.reloadButton
-        val progressBar = binding.progressBar
         when (messageType) {
             Message.NOTHING_WAS_FOUND -> {
-                reloadButton.visibility = View.GONE
-                placeholderMessage.visibility = View.VISIBLE
-                errorImage.setImageResource(R.drawable.nothing_was_found)
-                errorMessage.setText(R.string.nothing_was_found)
+                binding.reloadButton.visibility = View.GONE
+                binding.placeholderMessage.visibility = View.VISIBLE
+                binding.errorImage.setImageResource(R.drawable.nothing_was_found)
+                binding.errorMessage.setText(R.string.nothing_was_found)
             }
             Message.COMMUNICATION_PROBLEMS -> {
-                placeholderMessage.visibility = View.VISIBLE
-                errorImage.setImageResource(R.drawable.communication_problems)
-                errorMessage.setText(R.string.communication_problems)
-                reloadButton.visibility = View.VISIBLE
+                binding.placeholderMessage.visibility = View.VISIBLE
+                binding.errorImage.setImageResource(R.drawable.communication_problems)
+                binding.errorMessage.setText(R.string.communication_problems)
+                binding.reloadButton.visibility = View.VISIBLE
             }
             Message.SEARCH_HISTORY -> {
                 binding.clearHistoryButton.visibility = View.VISIBLE
@@ -179,12 +173,12 @@ class SearchActivity : AppCompatActivity() {
             Message.VIEW_GONE -> {
                 binding.clearHistoryButton.visibility = View.GONE
                 binding.searchHistoryTitle.visibility = View.GONE
-                placeholderMessage.visibility = View.GONE
-                progressBar.visibility = View.GONE
+                binding.placeholderMessage.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
                 if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
             }
             Message.PROGRESS_BAR -> {
-                progressBar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
             }
         }
     }
@@ -207,6 +201,7 @@ class SearchActivity : AppCompatActivity() {
         PROGRESS_BAR
     }
     private companion object {
+        const val TRACK_INTENT_VALUE = "TRACK_INTENT_VALUE"
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_TEXT_DEF = ""
     }

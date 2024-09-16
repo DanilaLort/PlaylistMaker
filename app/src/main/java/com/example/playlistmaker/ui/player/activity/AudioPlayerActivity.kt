@@ -10,10 +10,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.player.view_model.AudioPlayerState
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerViewModel
 import com.google.gson.Gson
-
-const val TRACK_INTENT_VALUE = "TRACK_INTENT_VALUE"
 
 class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var buttonPlay: ImageButton
@@ -46,12 +45,31 @@ class AudioPlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_cover)
             .transform(RoundedCorners(16))
             .into(binding.trackCover)
-        prepareMediaPlayer()
+        viewModel.prepareMediaPlayer()
         buttonPlay.setOnClickListener {
             viewModel.playbackControl()
         }
-        viewModel.getTimerLiveData().observe(this) { time ->
-            trackTime.text = time
+        viewModel.getPlayerStateLiveData().observe(this) { state ->
+            when (state) {
+                is AudioPlayerState.Prepared -> {
+                    buttonPlay.isEnabled = true
+                    buttonPlay.setImageResource(R.drawable.ic_button_play)
+                    trackTime.setText(R.string.track_time)
+                }
+                is AudioPlayerState.Completion -> {
+                    buttonPlay.setImageResource(R.drawable.ic_button_play)
+                    trackTime.setText(R.string.track_time)
+                }
+                is AudioPlayerState.Start -> {
+                    buttonPlay.setImageResource(R.drawable.ic_button_pause)
+                }
+                is AudioPlayerState.Pause -> {
+                    buttonPlay.setImageResource(R.drawable.ic_button_play)
+                }
+                is AudioPlayerState.Playing -> {
+                    trackTime.text = state.timer
+                }
+            }
         }
     }
 
@@ -65,22 +83,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         viewModel.destroyPlayer()
     }
 
-    private fun prepareMediaPlayer() {
-        viewModel.prepareMediaPlayer(
-            {
-                buttonPlay.isEnabled = true
-                buttonPlay.setImageResource(R.drawable.ic_button_play)
-                trackTime.setText(R.string.track_time)
-            },
-            {
-                buttonPlay.setImageResource(R.drawable.ic_button_play)
-                trackTime.setText(R.string.track_time)
-            })
-        viewModel.setOnPause {
-            buttonPlay.setImageResource(R.drawable.ic_button_play)
-        }
-        viewModel.setOnStart {
-            buttonPlay.setImageResource(R.drawable.ic_button_pause)
-        }
+    companion object {
+        const val TRACK_INTENT_VALUE = "TRACK_INTENT_VALUE"
     }
 }

@@ -3,6 +3,8 @@ package com.example.playlistmaker
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.domain.api.ThemeInteractor
+import com.example.playlistmaker.domain.api.ValueManagerInteractor
 import com.example.playlistmaker.domain.api.ValueManagerRepository
 import com.example.playlistmaker.domain.models.Track
 
@@ -20,6 +22,7 @@ class App : Application() {
             }
         )
     }
-    fun getTrackRepository() : ValueManagerRepository<List<Track>> = Creator.getTrackManagerRepository(this)
-    fun getThemeRepository() : ValueManagerRepository<Boolean> = Creator.getThemeManagerRepository(this)
+    fun getTrackManagerInteractor() : ValueManagerInteractor<List<Track>> = Creator.provideTrackManagerInteractor(this)
+    fun getThemeManagerInteractor() : ValueManagerInteractor<Boolean> = Creator.provideThemeManagerInteractor(this)
+    fun getThemeInteractor() : ThemeInteractor = Creator.provideThemeInteractor(this)
 }

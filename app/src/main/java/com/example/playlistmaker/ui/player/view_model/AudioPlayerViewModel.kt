@@ -14,12 +14,10 @@ import com.example.playlistmaker.ui.tracks.Delay
 
 class AudioPlayerViewModel(private val mediaPlayerInteractor: MediaPlayerInteractor) : ViewModel() {
     private val handler = Handler(Looper.getMainLooper())
-    private var timerLiveData = MutableLiveData(TIMER_DEF)
+    private var playerStateLiveData = MutableLiveData<AudioPlayerState>()
     private lateinit var timerTask: Runnable
-    private lateinit var onPause: OnPause
-    private lateinit var onStart: OnStart
+    fun getPlayerStateLiveData(): LiveData<AudioPlayerState> = playerStateLiveData
 
-    fun getTimerLiveData(): LiveData<String> = timerLiveData
     fun playbackControl() {
         when(mediaPlayerInteractor.getState()) {
             STATE_PLAYING -> {
@@ -33,12 +31,12 @@ class AudioPlayerViewModel(private val mediaPlayerInteractor: MediaPlayerInterac
     fun pausePlayer() {
         stopTimeTask()
         mediaPlayerInteractor.pause {
-            onPause.onPause()
+            playerStateLiveData.postValue(AudioPlayerState.Pause)
         }
     }
     private fun startPlayer() {
         mediaPlayerInteractor.start {
-            onStart.onStart()
+            playerStateLiveData.postValue(AudioPlayerState.Start)
             timerTask = createUpdateTimerTask()
             handler.post(
                 timerTask
@@ -49,28 +47,23 @@ class AudioPlayerViewModel(private val mediaPlayerInteractor: MediaPlayerInterac
         stopTimeTask()
         mediaPlayerInteractor.destroy()
     }
-    fun setOnStart(onStart: OnStart) {
-        this.onStart = onStart
-    }
-    fun setOnPause(onPause: OnPause) {
-        this.onPause = onPause
-    }
-    fun prepareMediaPlayer(onPrepare: OnPrepare, onCompletion: OnCompletion) {
+    fun prepareMediaPlayer() {
         mediaPlayerInteractor.preparedListener {
             stopTimeTask()
-            onPrepare.onPrepare()
+            playerStateLiveData.postValue(AudioPlayerState.Prepared)
+            mediaPlayerInteractor.setStatePrepared()
         }
         mediaPlayerInteractor.completionListener {
             stopTimeTask()
-            onCompletion.onCompletion()
             mediaPlayerInteractor.setStatePrepared()
+            playerStateLiveData.postValue(AudioPlayerState.Completion)
+
         }
-        mediaPlayerInteractor.setStatePrepared()
     }
     private fun createUpdateTimerTask(): Runnable {
         return object : Runnable {
             override fun run() {
-                timerLiveData.postValue(mediaPlayerInteractor.getCurrentPosition())
+                playerStateLiveData.postValue(AudioPlayerState.Playing(mediaPlayerInteractor.getCurrentPosition()))
                 handler.postDelayed(this, Delay.ONE_SECOND_DELAY / 3)
             }
         }
@@ -78,25 +71,12 @@ class AudioPlayerViewModel(private val mediaPlayerInteractor: MediaPlayerInterac
     private fun stopTimeTask() {
         if (mediaPlayerInteractor.getState() == STATE_PLAYING) handler.removeCallbacks(timerTask)
     }
-    fun interface OnPause {
-        fun onPause()
-    }
-    fun interface OnStart {
-        fun onStart()
-    }
-    fun interface OnPrepare {
-        fun onPrepare()
-    }
-    fun interface OnCompletion {
-        fun onCompletion()
-    }
     companion object {
         fun getViewModelFactory(url: String): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 AudioPlayerViewModel(Creator.provideMediaPlayerInteractor(url))
             }
         }
-        private const val TIMER_DEF = "00:00"
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2
         const val STATE_PAUSED = 3
