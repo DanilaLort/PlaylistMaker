@@ -6,13 +6,11 @@ import com.example.playlistmaker.domain.api.ValueManagerRepository
 
 class ThemeManagerRepositoryImpl(context: Context) : ValueManagerRepository<Boolean> {
     private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
-
     override fun saveValue(value: Boolean) {
         sharedPrefs.edit()
             .putBoolean(KEY_FOR_THEME, value)
             .apply()
     }
-
     override fun getValue() : Boolean {
         return sharedPrefs.getBoolean(KEY_FOR_THEME, false)
     }
