@@ -1,18 +1,21 @@
 package com.example.playlistmaker.data.impl
 
-import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import com.example.playlistmaker.domain.models.Track
+import android.content.SharedPreferences
 import com.example.playlistmaker.domain.api.ValueManagerRepository
+import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-class TrackManagerRepositoryImpl(context: Context) : ValueManagerRepository<List<Track>> {
-    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
-    private val gson = Gson()
+
+class TrackManagerRepositoryImpl(
+    private val sharedPrefs: SharedPreferences,
+    private val gson: Gson
+) : ValueManagerRepository<List<Track>> {
+//    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
+//    private val gson = Gson()
     private val trackListType = object : TypeToken<ArrayList<Track>>() {}.type
    override fun saveValue(value: List<Track>) {
         sharedPrefs.edit()
-            .putString(KEY_FOR_TRACK_HISTORY, Gson().toJson(value))
+            .putString(KEY_FOR_TRACK_HISTORY, gson.toJson(value))
             .apply()
    }
 
@@ -24,7 +27,6 @@ class TrackManagerRepositoryImpl(context: Context) : ValueManagerRepository<List
     }
 
     private companion object {
-        const val SHARED_PREFERENCES = "preference_for_tracks"
         const val KEY_FOR_TRACK_HISTORY = "key_for_track_history"
         const val SEARCH_HISTORY_DEF_VALUE = "[]"
     }

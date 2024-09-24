@@ -7,6 +7,7 @@ interface MediaPlayerInteractor {
     fun getCurrentPosition(): String
     fun getState(): Int
     fun setStatePrepared()
+    fun setUrl(url: String)
     fun preparedListener(consumer: MediaPlayerConsumer)
     fun completionListener(consumer: MediaPlayerConsumer)
     fun interface MediaPlayerConsumer {

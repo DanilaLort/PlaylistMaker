@@ -6,8 +6,11 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MediaPlayerInteractorImpl (
-        private val mediaPlayerRepository: MediaPlayerRepository
+    private val mediaPlayerRepository: MediaPlayerRepository
     ) : MediaPlayerInteractor {
+    override fun setUrl(url: String) {
+        mediaPlayerRepository.setUrl(url)
+    }
     override fun start(consumer: MediaPlayerInteractor.MediaPlayerConsumer) {
         mediaPlayerRepository.startPlayer()
         consumer.consume()

@@ -5,19 +5,19 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.api.MediaPlayerInteractor
 import com.example.playlistmaker.ui.tracks.Delay
 
-class AudioPlayerViewModel(private val mediaPlayerInteractor: MediaPlayerInteractor) : ViewModel() {
+class AudioPlayerViewModel(
+    private val mediaPlayerInteractor: MediaPlayerInteractor
+) : ViewModel() {
     private val handler = Handler(Looper.getMainLooper())
     private var playerStateLiveData = MutableLiveData<AudioPlayerState>()
     private lateinit var timerTask: Runnable
     fun getPlayerStateLiveData(): LiveData<AudioPlayerState> = playerStateLiveData
-
+    fun setUrl(url: String) {
+        mediaPlayerInteractor.setUrl(url)
+    }
     fun playbackControl() {
         when(mediaPlayerInteractor.getState()) {
             STATE_PLAYING -> {
@@ -72,11 +72,6 @@ class AudioPlayerViewModel(private val mediaPlayerInteractor: MediaPlayerInterac
         if (mediaPlayerInteractor.getState() == STATE_PLAYING) handler.removeCallbacks(timerTask)
     }
     companion object {
-        fun getViewModelFactory(url: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                AudioPlayerViewModel(Creator.provideMediaPlayerInteractor(url))
-            }
-        }
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2
         const val STATE_PAUSED = 3

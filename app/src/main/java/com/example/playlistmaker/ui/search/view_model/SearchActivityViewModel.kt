@@ -6,11 +6,6 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.App
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.Resource
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.domain.api.ValueManagerInteractor
@@ -81,14 +76,6 @@ class SearchActivityViewModel(
             }
     }
     companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as App)
-                val trackManagerInteractor: ValueManagerInteractor<List<Track>> = application.getTrackManagerInteractor()
-                val trackInteractor: TracksInteractor = Creator.provideTracksInteractor()
-                SearchActivityViewModel(trackManagerInteractor, trackInteractor)
-            }
-        }
         private val SEARCH_REQUEST_TOKEN = Any()
         private const val SEARCH_HISTORY_SIZE = 10
     }
