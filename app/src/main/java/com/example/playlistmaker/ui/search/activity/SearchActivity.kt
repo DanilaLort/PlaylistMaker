@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
@@ -23,11 +22,12 @@ import com.example.playlistmaker.ui.search.view_model.TrackState
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.ui.tracks.TrackAdapter
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var viewModel: SearchActivityViewModel
+    private val viewModel by viewModel<SearchActivityViewModel>()
     private val handler = Handler(Looper.getMainLooper())
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = SEARCH_TEXT_DEF
@@ -49,7 +49,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this, SearchActivityViewModel.getViewModelFactory())[SearchActivityViewModel::class.java]
         binding.searchToMain.setOnClickListener {
             finish()
         }
