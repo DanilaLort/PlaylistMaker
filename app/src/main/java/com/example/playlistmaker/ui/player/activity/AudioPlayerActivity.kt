@@ -54,11 +54,11 @@ class AudioPlayerActivity : AppCompatActivity() {
                 is AudioPlayerState.Prepared -> {
                     buttonPlay.isEnabled = true
                     buttonPlay.setImageResource(R.drawable.ic_button_play)
-                    trackTime.setText(R.string.track_time)
+                    trackTime.setText(R.string.trackTime)
                 }
                 is AudioPlayerState.Completion -> {
                     buttonPlay.setImageResource(R.drawable.ic_button_play)
-                    trackTime.setText(R.string.track_time)
+                    trackTime.setText(R.string.trackTime)
                 }
                 is AudioPlayerState.Start -> {
                     buttonPlay.setImageResource(R.drawable.ic_button_pause)

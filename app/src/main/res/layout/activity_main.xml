@@ -25,7 +25,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/app_name"
+                    android:text="@string/appName"
                     android:textSize="22sp"
                     android:layout_gravity="start"
                     android:textColor="@color/white"
@@ -38,18 +38,18 @@
     <Button
         style="@style/main_activity_button"
         android:id="@+id/button_search"
-        android:text="@string/Search"
+        android:text="@string/search"
         app:icon="@drawable/ic_search"/>
 
     <Button
         style="@style/main_activity_button"
         android:id="@+id/button_media_lib"
-        android:text="@string/MediaLib"
+        android:text="@string/mediaLib"
         app:icon="@drawable/ic_media_lib"/>
 
     <Button
         style="@style/main_activity_button"
         android:id="@+id/button_settings"
-        android:text="@string/Settings"
+        android:text="@string/settings"
         app:icon="@drawable/ic_settings"/>
 </LinearLayout>
