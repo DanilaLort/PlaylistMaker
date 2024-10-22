@@ -156,8 +156,8 @@ class SearchActivity : AppCompatActivity() {
             Message.NOTHING_WAS_FOUND -> {
                 binding.reloadButton.visibility = View.GONE
                 binding.placeholderMessage.visibility = View.VISIBLE
-                binding.errorImage.setImageResource(R.drawable.nothing_was_found)
-                binding.errorMessage.setText(R.string.nothing_was_found)
+                binding.errorImage.setImageResource(R.drawable.error_placeholder)
+                binding.errorMessage.setText(R.string.nothingWasFound)
             }
             Message.COMMUNICATION_PROBLEMS -> {
                 binding.placeholderMessage.visibility = View.VISIBLE
