@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorOtherScreens"
-    tools:context=".ui.player.activity.AudioPlayerActivity">
+    android:background="?attr/colorPrimary"
+    tools:context=".ui.player.fragments.AudioPlayerFragment">
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/textsBarrier"

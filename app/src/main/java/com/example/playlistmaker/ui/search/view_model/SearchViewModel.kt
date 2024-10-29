@@ -12,7 +12,7 @@ import com.example.playlistmaker.domain.api.ValueManagerInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.tracks.Delay
 
-class SearchActivityViewModel(
+class SearchViewModel(
     private val trackManagerInteractor: ValueManagerInteractor<List<Track>>,
     private val trackInteractor: TracksInteractor
 ) : ViewModel() {

@@ -1,14 +1,14 @@
 package com.example.playlistmaker.ui.main.activity
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
-import com.example.playlistmaker.ui.library.activity.MediaLibraryActivity
 import com.example.playlistmaker.ui.main.view_model.MainActivityViewModel
-import com.example.playlistmaker.ui.search.activity.SearchActivity
-import com.example.playlistmaker.ui.settings.activity.SettingsActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
@@ -19,30 +19,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.setupWithNavController(navController)
         viewModel.updateThemeState()
-        binding.buttonSearch.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    SearchActivity::class.java
-                )
-            )
-        }
-        binding.buttonMediaLib.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    MediaLibraryActivity::class.java
-                )
-            )
-        }
-        binding.buttonSettings.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    SettingsActivity::class.java
-                )
-            )
-        }
     }
 }

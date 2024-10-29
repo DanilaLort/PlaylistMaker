@@ -1,35 +1,46 @@
-package com.example.playlistmaker.ui.player.activity
+package com.example.playlistmaker.ui.player.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerState
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerViewModel
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AudioPlayerActivity : AppCompatActivity() {
+class AudioPlayerFragment : Fragment() {
     private lateinit var buttonPlay: ImageButton
     private lateinit var trackTime: TextView
-    private lateinit var binding: ActivityAudioPlayerBinding
+    private lateinit var binding: FragmentAudioPlayerBinding
     private val viewModel by viewModel<AudioPlayerViewModel>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        val track = Gson().fromJson(intent.getStringExtra(TRACK_INTENT_VALUE), Track::class.java)
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentAudioPlayerBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val track = Gson().fromJson(requireArguments().getString(TRACK_VALUE), Track::class.java)
         val url = track.previewUrl ?: ""
-//        viewModel = ViewModelProvider(this, AudioPlayerViewModel.getViewModelFactory(url))[AudioPlayerViewModel::class.java]
         buttonPlay = binding.buttonPlay
         viewModel.setUrl(url)
         binding.returnButton.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
         trackTime = binding.trackTime
         binding.trackCover.setImageResource(R.drawable.ic_cover)
@@ -49,7 +60,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         buttonPlay.setOnClickListener {
             viewModel.playbackControl()
         }
-        viewModel.getPlayerStateLiveData().observe(this) { state ->
+        viewModel.getPlayerStateLiveData().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AudioPlayerState.Prepared -> {
                     buttonPlay.isEnabled = true
@@ -84,6 +95,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val TRACK_INTENT_VALUE = "TRACK_INTENT_VALUE"
+        const val TRACK_VALUE = "TRACK_VALUE"
     }
 }

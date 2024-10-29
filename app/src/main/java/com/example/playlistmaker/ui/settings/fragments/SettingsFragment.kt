@@ -1,27 +1,34 @@
-package com.example.playlistmaker.ui.settings.activity
+package com.example.playlistmaker.ui.settings.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySettingsBinding
+import com.example.playlistmaker.databinding.FragmentSettingsBinding
 import com.example.playlistmaker.ui.settings.view_model.SettingViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
     private val viewModel by viewModel<SettingViewModel>()
-    private lateinit var binding: ActivitySettingsBinding
+    private lateinit var binding: FragmentSettingsBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSettingsBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
     @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val themeSwitcher = binding.themeSwitcher
-        binding.settingsToMain.setOnClickListener {
-            finish()
-        }
         binding.buttonShare.setOnClickListener {
             val message = getString(R.string.urlToShare)
             val shareIntent = Intent(Intent.ACTION_SEND)
@@ -47,7 +54,7 @@ class SettingsActivity : AppCompatActivity() {
                 )
             )
         }
-        viewModel.getThemeStateLiveData().observe(this) { themeState ->
+        viewModel.getThemeStateLiveData().observe(viewLifecycleOwner) { themeState ->
             themeSwitcher.isChecked = themeState
         }
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
