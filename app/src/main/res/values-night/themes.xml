@@ -7,6 +7,6 @@
         <item name="colorSecondaryVariant">@color/white</item>
         <item name="colorOnPrimaryContainer">@color/blackish_blue</item>
         <item name="colorPrimary">@color/blackish_blue</item>
-        <item name="colorGreyBlackishBlue">@color/blackish_blue</item>
+        <item name="colorGreyBlackishBlue">@color/grey_EB</item>
     </style>
 </resources>

@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,17 +54,17 @@ class SearchFragment : Fragment() {
     @SuppressLint("MissingInflatedId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val reloadButton = binding.reloadButton
         recyclerView = binding.trackList
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val editText = binding.searchTextField
         if (savedInstanceState != null) {
-            editText.setText(savedInstanceState.getString(SEARCH_TEXT))
+            binding.searchTextField.setText(savedInstanceState.getString(SEARCH_TEXT))
         }
         val buttonClear = binding.buttonClear
-        editText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && editText.text.isEmpty()) viewModel.showSearchHistory()
-            else showMessage(Message.VIEW_GONE)
+        binding.searchTextField.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.searchTextField.text.isEmpty()) viewModel.showSearchHistory()
+            else {
+                if (binding.searchTextField.text.isEmpty()) showMessage(Message.VIEW_GONE)
+            }
         }
 
         binding.clearHistoryButton.setOnClickListener {
@@ -74,24 +75,29 @@ class SearchFragment : Fragment() {
         viewModel.getLiveDataTrackState().observe(viewLifecycleOwner) { trackState ->
             when (trackState) {
                 is TrackState.Loading -> {
+                    Log.d("ShowMessage", "Loading")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.PROGRESS_BAR)
                 }
                 is TrackState.Empty -> {
+                    Log.d("ShowMessage", "Empty")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.NOTHING_WAS_FOUND)
                 }
                 is TrackState.Error -> {
+                    Log.d("ShowMessage", "Error")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.COMMUNICATION_PROBLEMS)
                     reloadText = searchText
                 }
                 is TrackState.Content -> {
+                    Log.d("ShowMessage", "Content")
                     showMessage(Message.VIEW_GONE)
                     trackAdapter.tracks = trackState.tracks
                     recyclerView.adapter = trackAdapter
                 }
                 is TrackState.History -> {
+                    Log.d("ShowMessage", "${trackState.tracks.isNotEmpty()}")
                     showMessage(Message.VIEW_GONE)
                     if (trackState.tracks.isNotEmpty()) {
                         showMessage(Message.SEARCH_HISTORY)
@@ -110,7 +116,7 @@ class SearchFragment : Fragment() {
                 buttonClear.isVisible = !s.isNullOrEmpty()
                 if (s != null) {
                     if (s.isNotEmpty()) {
-                        searchText = editText.text.toString()
+                        searchText = binding.searchTextField.text.toString()
                         viewModel.searchDebounce(s.toString())
                     }
                 }
@@ -120,19 +126,19 @@ class SearchFragment : Fragment() {
 
             }
         }
-        editText.setOnEditorActionListener { _, actionId, _ ->
+        binding.searchTextField.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.searchDebounce(searchText)
             }
             false
         }
-        editText.addTextChangedListener(textWatcher)
+        binding.searchTextField.addTextChangedListener(textWatcher)
         buttonClear.setOnClickListener {
-            editText.setText(SEARCH_TEXT_DEF)
+            binding.searchTextField.setText(SEARCH_TEXT_DEF)
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-            editText.clearFocus()
+            binding.searchTextField.clearFocus()
         }
-        reloadButton.setOnClickListener {
+        binding.reloadButton.setOnClickListener {
             viewModel.searchDebounce(reloadText)
         }
 
@@ -148,6 +154,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun showMessage(messageType: Message) {
+        Log.d("ShowMessage", "ShowMessage")
         when (messageType) {
             Message.NOTHING_WAS_FOUND -> {
                 binding.reloadButton.visibility = View.GONE

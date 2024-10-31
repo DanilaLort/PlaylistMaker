@@ -13,6 +13,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.main.activity.MainActivity
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerState
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerViewModel
 import com.google.gson.Gson
@@ -42,6 +43,7 @@ class AudioPlayerFragment : Fragment() {
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
         }
+        (activity as MainActivity).setBottomNavigationViewVisibility(false)
         trackTime = binding.trackTime
         binding.trackCover.setImageResource(R.drawable.ic_cover)
         binding.trackTittle.text = track.trackName
@@ -92,6 +94,11 @@ class AudioPlayerFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.destroyPlayer()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        (activity as MainActivity).setBottomNavigationViewVisibility(true)
     }
 
     companion object {

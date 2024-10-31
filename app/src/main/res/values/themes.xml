@@ -8,7 +8,7 @@
         <item name="colorSecondaryVariant">@color/grey_EB</item>
         <item name="colorOnPrimaryContainer">@color/grey_B4</item>
         <item name="colorPrimary">@color/white</item>
-        <item name="colorGreyBlackishBlue">@color/grey_EB</item>
+        <item name="colorGreyBlackishBlue">@color/blackish_blue</item>
     </style>
 
 </resources>
