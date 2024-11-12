@@ -1,19 +1,19 @@
 package com.example.playlistmaker.ui.player.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.api.MediaPlayerInteractor
-import com.example.playlistmaker.ui.tracks.Delay
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class AudioPlayerViewModel(
     private val mediaPlayerInteractor: MediaPlayerInteractor
 ) : ViewModel() {
-    private val handler = Handler(Looper.getMainLooper())
     private var playerStateLiveData = MutableLiveData<AudioPlayerState>()
-    private lateinit var timerTask: Runnable
+    private var timerJob: Job? = null
     fun getPlayerStateLiveData(): LiveData<AudioPlayerState> = playerStateLiveData
     fun setUrl(url: String) {
         mediaPlayerInteractor.setUrl(url)
@@ -37,10 +37,7 @@ class AudioPlayerViewModel(
     private fun startPlayer() {
         mediaPlayerInteractor.start {
             playerStateLiveData.postValue(AudioPlayerState.Start)
-            timerTask = createUpdateTimerTask()
-            handler.post(
-                timerTask
-            )
+            startTimer()
         }
     }
     fun destroyPlayer() {
@@ -60,16 +57,17 @@ class AudioPlayerViewModel(
 
         }
     }
-    private fun createUpdateTimerTask(): Runnable {
-        return object : Runnable {
-            override fun run() {
+
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+                while (mediaPlayerInteractor.getState() == STATE_PLAYING) {
+                delay(300L)
                 playerStateLiveData.postValue(AudioPlayerState.Playing(mediaPlayerInteractor.getCurrentPosition()))
-                handler.postDelayed(this, Delay.ONE_SECOND_DELAY / 3)
             }
         }
     }
     private fun stopTimeTask() {
-        if (mediaPlayerInteractor.getState() == STATE_PLAYING) handler.removeCallbacks(timerTask)
+        if (mediaPlayerInteractor.getState() == STATE_PLAYING) timerJob?.cancel()
     }
     companion object {
         const val STATE_PREPARED = 1

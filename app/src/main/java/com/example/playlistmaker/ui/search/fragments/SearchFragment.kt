@@ -2,8 +2,6 @@ package com.example.playlistmaker.ui.search.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,33 +12,33 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.player.fragments.AudioPlayerFragment
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.search.view_model.TrackState
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.ui.tracks.TrackAdapter
+import com.example.playlistmaker.utils.debounce
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var binding: FragmentSearchBinding
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
     private val viewModel by viewModel<SearchViewModel>()
-    private val handler = Handler(Looper.getMainLooper())
     private var searchText = SEARCH_TEXT_DEF
-    private var reloadText = SEARCH_TEXT_DEF
     private val trackAdapter = TrackAdapter { track ->
-        if (clickDebounce()) {
-            viewModel.saveTracks(track)
-            val trackBundle = bundleOf(AudioPlayerFragment.TRACK_VALUE to Gson().toJson(track))
-            findNavController().navigate(R.id.action_searchFragment2_to_audioPlayerFragment, trackBundle)
-        }
+        onTrackClickDebounce(track)
+
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,6 +51,11 @@ class SearchFragment : Fragment() {
 
     @SuppressLint("MissingInflatedId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        onTrackClickDebounce = debounce(Delay.ONE_SECOND_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+            viewModel.saveTracks(track)
+            val trackBundle = bundleOf(AudioPlayerFragment.TRACK_VALUE to Gson().toJson(track))
+            findNavController().navigate(R.id.action_searchFragment2_to_audioPlayerFragment, trackBundle)
+        }
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.trackList
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -88,7 +91,6 @@ class SearchFragment : Fragment() {
                     Log.d("ShowMessage", "Error")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.COMMUNICATION_PROBLEMS)
-                    reloadText = searchText
                 }
                 is TrackState.Content -> {
                     Log.d("ShowMessage", "Content")
@@ -139,7 +141,7 @@ class SearchFragment : Fragment() {
             binding.searchTextField.clearFocus()
         }
         binding.reloadButton.setOnClickListener {
-            viewModel.searchDebounce(reloadText)
+            viewModel.searchLatestText()
         }
 
     }
@@ -185,16 +187,17 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun clickDebounce() : Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, Delay.ONE_SECOND_DELAY)
-        }
-        return current
-    }
+//    private fun clickDebounce() : Boolean {
+//        val current = isClickAllowed
+//        if (isClickAllowed) {
+//            isClickAllowed = false
+//
+////            handler.postDelayed({ isClickAllowed = true }, Delay.ONE_SECOND_DELAY)
+//        }
+//        return current
+//    }
 
-    private var isClickAllowed = true
+//    private var isClickAllowed = true
     enum class Message {
         NOTHING_WAS_FOUND,
         COMMUNICATION_PROBLEMS,
