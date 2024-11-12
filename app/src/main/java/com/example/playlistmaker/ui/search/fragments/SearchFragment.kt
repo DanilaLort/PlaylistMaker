@@ -1,65 +1,70 @@
-package com.example.playlistmaker.ui.search.activity
+package com.example.playlistmaker.ui.search.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.ui.player.activity.AudioPlayerActivity
-import com.example.playlistmaker.ui.search.view_model.SearchActivityViewModel
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.ui.player.fragments.AudioPlayerFragment
+import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.search.view_model.TrackState
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.ui.tracks.TrackAdapter
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var binding: ActivitySearchBinding
-    private val viewModel by viewModel<SearchActivityViewModel>()
+    private lateinit var binding: FragmentSearchBinding
+    private val viewModel by viewModel<SearchViewModel>()
     private val handler = Handler(Looper.getMainLooper())
     private var searchText = SEARCH_TEXT_DEF
     private var reloadText = SEARCH_TEXT_DEF
     private val trackAdapter = TrackAdapter { track ->
         if (clickDebounce()) {
             viewModel.saveTracks(track)
-            val intent = Intent(
-                this,
-                AudioPlayerActivity::class.java
-            )
-            intent.putExtra(TRACK_INTENT_VALUE, Gson().toJson(track))
-            this.startActivity(
-                intent
-            )
+            val trackBundle = bundleOf(AudioPlayerFragment.TRACK_VALUE to Gson().toJson(track))
+            findNavController().navigate(R.id.action_searchFragment2_to_audioPlayerFragment, trackBundle)
         }
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSearchBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
     @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.searchToMain.setOnClickListener {
-            finish()
-        }
-        val reloadButton = binding.reloadButton
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.trackList
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val editText = binding.searchTextField
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        if (savedInstanceState != null) {
+            binding.searchTextField.setText(savedInstanceState.getString(SEARCH_TEXT))
+        }
         val buttonClear = binding.buttonClear
-        editText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && editText.text.isEmpty()) viewModel.showSearchHistory()
-            else showMessage(Message.VIEW_GONE)
+        binding.searchTextField.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.searchTextField.text.isEmpty()) viewModel.showSearchHistory()
+            else {
+                if (binding.searchTextField.text.isEmpty()) showMessage(Message.VIEW_GONE)
+            }
         }
 
         binding.clearHistoryButton.setOnClickListener {
@@ -67,27 +72,32 @@ class SearchActivity : AppCompatActivity() {
             viewModel.clearSearchHistory()
             showMessage(Message.VIEW_GONE)
         }
-        viewModel.getLiveDataTrackState().observe(this) { trackState ->
+        viewModel.getLiveDataTrackState().observe(viewLifecycleOwner) { trackState ->
             when (trackState) {
                 is TrackState.Loading -> {
+                    Log.d("ShowMessage", "Loading")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.PROGRESS_BAR)
                 }
                 is TrackState.Empty -> {
+                    Log.d("ShowMessage", "Empty")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.NOTHING_WAS_FOUND)
                 }
                 is TrackState.Error -> {
+                    Log.d("ShowMessage", "Error")
                     showMessage(Message.VIEW_GONE)
                     showMessage(Message.COMMUNICATION_PROBLEMS)
                     reloadText = searchText
                 }
                 is TrackState.Content -> {
+                    Log.d("ShowMessage", "Content")
                     showMessage(Message.VIEW_GONE)
                     trackAdapter.tracks = trackState.tracks
                     recyclerView.adapter = trackAdapter
                 }
                 is TrackState.History -> {
+                    Log.d("ShowMessage", "${trackState.tracks.isNotEmpty()}")
                     showMessage(Message.VIEW_GONE)
                     if (trackState.tracks.isNotEmpty()) {
                         showMessage(Message.SEARCH_HISTORY)
@@ -106,7 +116,7 @@ class SearchActivity : AppCompatActivity() {
                 buttonClear.isVisible = !s.isNullOrEmpty()
                 if (s != null) {
                     if (s.isNotEmpty()) {
-                        searchText = editText.text.toString()
+                        searchText = binding.searchTextField.text.toString()
                         viewModel.searchDebounce(s.toString())
                     }
                 }
@@ -116,21 +126,19 @@ class SearchActivity : AppCompatActivity() {
 
             }
         }
-        editText.setOnEditorActionListener { _, actionId, _ ->
+        binding.searchTextField.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.searchDebounce(searchText)
             }
             false
         }
-        editText.addTextChangedListener(textWatcher)
+        binding.searchTextField.addTextChangedListener(textWatcher)
         buttonClear.setOnClickListener {
-            editText.setText(SEARCH_TEXT_DEF)
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+            binding.searchTextField.setText(SEARCH_TEXT_DEF)
             if (recyclerView.adapter != null) clearRecyclerView(recyclerView.adapter as TrackAdapter)
-            editText.clearFocus()
+            binding.searchTextField.clearFocus()
         }
-        reloadButton.setOnClickListener {
+        binding.reloadButton.setOnClickListener {
             viewModel.searchDebounce(reloadText)
         }
 
@@ -141,17 +149,12 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(SEARCH_TEXT, searchText)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        binding.searchTextField.setText(savedInstanceState.getString(
-            SEARCH_TEXT, SEARCH_TEXT_DEF
-        ))
-    }
     private fun clearRecyclerView(adapter: TrackAdapter) {
         adapter.clearList()
     }
 
     private fun showMessage(messageType: Message) {
+        Log.d("ShowMessage", "ShowMessage")
         when (messageType) {
             Message.NOTHING_WAS_FOUND -> {
                 binding.reloadButton.visibility = View.GONE
@@ -200,7 +203,6 @@ class SearchActivity : AppCompatActivity() {
         PROGRESS_BAR
     }
     private companion object {
-        const val TRACK_INTENT_VALUE = "TRACK_INTENT_VALUE"
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_TEXT_DEF = ""
     }

@@ -4,24 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorOtherScreens">
+    android:background="?attr/colorPrimary">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="4dp">
 
-        <Button
-            android:id="@+id/medialib_to_main"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/settings"
-            app:icon="@drawable/ic_arrow_back"
-            app:iconTint="?attr/colorOnPrimary"
-            app:iconSize="24dp"
-            app:iconGravity="textStart"/>
+<!--        <Button-->
+<!--            android:id="@+id/medialib_to_main"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="start"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:contentDescription="@string/settings"-->
+<!--            app:icon="@drawable/ic_arrow_back"-->
+<!--            app:iconTint="?attr/colorOnPrimary"-->
+<!--            app:iconSize="24dp"-->
+<!--            app:iconGravity="textStart"/>-->
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
         android:id="@+id/mediaLibTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="?attr/colorOtherScreens"
+        android:backgroundTint="?attr/colorPrimary"
         app:tabMode="fixed"
         app:tabIndicatorColor="?attr/colorOnPrimary"
         app:tabIndicatorFullWidth="true"
