@@ -62,6 +62,18 @@ class AudioPlayerFragment : Fragment() {
         buttonPlay.setOnClickListener {
             viewModel.playbackControl()
         }
+        viewModel.isTrackFavorite(track.trackId!!)
+        viewModel.getFavoriteStateLiveData().observe(viewLifecycleOwner) {
+            track.isFavorite = it
+            if (it) {
+                binding.buttonAddToFavorites.setImageResource(R.drawable.ic_add_to_favorites_active)
+            } else {
+                binding.buttonAddToFavorites.setImageResource(R.drawable.ic_add_to_favorites)
+            }
+        }
+        binding.buttonAddToFavorites.setOnClickListener {
+            viewModel.favoriteButtonControl(track)
+        }
         viewModel.getPlayerStateLiveData().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AudioPlayerState.Prepared -> {

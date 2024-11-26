@@ -24,5 +24,18 @@
     <fragment
         android:id="@+id/mediaLibraryFragment"
         android:name="com.example.playlistmaker.ui.library.fragments.MediaLibraryFragment"
-        android:label="MediaLibraryFragment" />
+        android:label="MediaLibraryFragment" >
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_audioPlayerFragment"
+            app:destination="@id/audioPlayerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteTracksFragment"
+        android:name="com.example.playlistmaker.ui.library.fragments.FavoriteTracksFragment"
+        android:label="FavoriteTracksFragment" >
+    </fragment>
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="com.example.playlistmaker.ui.library.fragments.PlaylistFragment"
+        android:label="PlaylistFragment" />
 </navigation>
