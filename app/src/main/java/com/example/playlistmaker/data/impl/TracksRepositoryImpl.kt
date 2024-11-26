@@ -7,15 +7,17 @@ import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.Resource
 import com.example.playlistmaker.domain.api.TracksRepository
 import com.example.playlistmaker.domain.models.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
-    override fun searchTracks(text: String): Resource<List<Track>> {
+    override fun searchTracks(text: String): Flow<Resource<List<Track>>> = flow {
         try {
             val response = networkClient.doRequest(TrackSearchRequest(text))
-            return if (response.resultCode == 200) {
-                Resource.Success((response as TrackResponse).results.map {
+            if (response.resultCode == 200) {
+                emit(Resource.Success((response as TrackResponse).results.map {
                     Track(
                         it.trackName,
                         it.artistName,
@@ -28,14 +30,14 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                         it.country,
                         it.previewUrl
                     )
-                })
+                }))
             } else {
-                Resource.Error("${response.resultCode}")
+                emit(Resource.Error("${response.resultCode}"))
             }
         } catch (e: Exception) {
             for (i in (networkClient.doRequest(TrackSearchRequest(text)) as TrackResponse).results) Log.d("searchRequest", i.toString())
             Log.d("searchRequest", "searchTracks - ${e.message}")
-            return Resource.Error(e.message.toString())
+            emit(Resource.Error(e.message.toString()))
         }
     }
 
