@@ -90,10 +90,10 @@ class FavoriteTracksFragment : Fragment() {
         }
     }
     companion object {
-        const val EMPTY_LIBRARY = "EMPTY_LIBRARY"
-        const val CONTENT = "CONTENT"
-        const val LOADING = "LOADING"
-        const val HIDE_ALL = "HIDE_ALL"
+        private const val EMPTY_LIBRARY = "EMPTY_LIBRARY"
+        private const val CONTENT = "CONTENT"
+        private const val LOADING = "LOADING"
+        private const val HIDE_ALL = "HIDE_ALL"
         fun newInstance() = FavoriteTracksFragment()
     }
 }
