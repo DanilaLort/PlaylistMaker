@@ -15,7 +15,6 @@ class FavoriteTracksRepositoryImpl(
 ) : FavoriteTracksRepository {
     override fun getTracks(): Flow<List<Track>> = flow {
         val tracks = appDatabase.trackDao().getTracks()
-//        Log.d("Favorite", tracks.toString())
         emit(convertFromTrackEntity(tracks))
     }
     override fun getTracksId(): Flow<List<Int>> = flow {

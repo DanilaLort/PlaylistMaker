@@ -23,6 +23,7 @@ class AudioPlayerViewModel(
     fun getFavoriteStateLiveData(): LiveData<Boolean> = favoriteStateLiveData
     fun setUrl(url: String) {
         mediaPlayerInteractor.setUrl(url)
+        prepareMediaPlayer()
     }
     fun favoriteButtonControl(track: Track) {
         if (track.isFavorite) {
@@ -53,11 +54,11 @@ class AudioPlayerViewModel(
             startTimer()
         }
     }
-    fun destroyPlayer() {
+    private fun destroyPlayer() {
         stopTimeTask()
         mediaPlayerInteractor.destroy()
     }
-    fun prepareMediaPlayer() {
+    private fun prepareMediaPlayer() {
         mediaPlayerInteractor.preparedListener {
             stopTimeTask()
             playerStateLiveData.postValue(AudioPlayerState.Prepared)
@@ -94,12 +95,16 @@ class AudioPlayerViewModel(
         }
     }
      fun isTrackFavorite(id: Int) {
-         Log.d("Favorite", id.toString())
          viewModelScope.launch {
              favoriteTrackInteractor.getTrackId().collect {
                  favoriteStateLiveData.postValue(it.contains(id))
              }
          }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        destroyPlayer()
     }
     companion object {
         const val STATE_PREPARED = 1

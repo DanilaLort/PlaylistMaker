@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.player.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +40,6 @@ class AudioPlayerFragment : Fragment() {
         val track = Gson().fromJson(requireArguments().getString(TRACK_VALUE), Track::class.java)
         val url = track.previewUrl ?: ""
         buttonPlay = binding.buttonPlay
-        viewModel.setUrl(url)
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -58,7 +58,7 @@ class AudioPlayerFragment : Fragment() {
             .placeholder(R.drawable.ic_cover)
             .transform(RoundedCorners(16))
             .into(binding.trackCover)
-        viewModel.prepareMediaPlayer()
+            viewModel.setUrl(url)
         buttonPlay.setOnClickListener {
             viewModel.playbackControl()
         }
@@ -103,14 +103,10 @@ class AudioPlayerFragment : Fragment() {
         viewModel.pausePlayer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.destroyPlayer()
-    }
-
     override fun onDetach() {
         super.onDetach()
         (activity as MainActivity).setBottomNavigationViewVisibility(true)
+
     }
 
     companion object {
