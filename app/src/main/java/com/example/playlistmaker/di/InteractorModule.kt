@@ -4,6 +4,8 @@ import com.example.playlistmaker.domain.api.MediaPlayerInteractor
 import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.domain.api.ValueManagerInteractor
+import com.example.playlistmaker.domain.db.FavoriteTrackInteractor
+import com.example.playlistmaker.domain.impl.FavoriteTrackInteractorImpl
 import com.example.playlistmaker.domain.impl.MediaPlayerInteractorImpl
 import com.example.playlistmaker.domain.impl.ThemeInteractorImpl
 import com.example.playlistmaker.domain.impl.TracksInteractorImpl
@@ -13,6 +15,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val interactorModule = module {
+    single<FavoriteTrackInteractor> {
+        FavoriteTrackInteractorImpl(get())
+    }
     single<TracksInteractor> {
         TracksInteractorImpl(get())
     }

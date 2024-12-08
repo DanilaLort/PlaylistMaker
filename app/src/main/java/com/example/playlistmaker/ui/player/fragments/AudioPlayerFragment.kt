@@ -39,7 +39,6 @@ class AudioPlayerFragment : Fragment() {
         val track = Gson().fromJson(requireArguments().getString(TRACK_VALUE), Track::class.java)
         val url = track.previewUrl ?: ""
         buttonPlay = binding.buttonPlay
-        viewModel.setUrl(url)
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -58,9 +57,21 @@ class AudioPlayerFragment : Fragment() {
             .placeholder(R.drawable.ic_cover)
             .transform(RoundedCorners(16))
             .into(binding.trackCover)
-        viewModel.prepareMediaPlayer()
+            viewModel.setUrl(url)
         buttonPlay.setOnClickListener {
             viewModel.playbackControl()
+        }
+        viewModel.isTrackFavorite(track.trackId!!)
+        viewModel.getFavoriteStateLiveData().observe(viewLifecycleOwner) {
+            track.isFavorite = it
+            if (it) {
+                binding.buttonAddToFavorites.setImageResource(R.drawable.ic_add_to_favorites_active)
+            } else {
+                binding.buttonAddToFavorites.setImageResource(R.drawable.ic_add_to_favorites)
+            }
+        }
+        binding.buttonAddToFavorites.setOnClickListener {
+            viewModel.favoriteButtonControl(track)
         }
         viewModel.getPlayerStateLiveData().observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -91,14 +102,10 @@ class AudioPlayerFragment : Fragment() {
         viewModel.pausePlayer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.destroyPlayer()
-    }
-
     override fun onDetach() {
         super.onDetach()
         (activity as MainActivity).setBottomNavigationViewVisibility(true)
+
     }
 
     companion object {

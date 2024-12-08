@@ -5,19 +5,21 @@ import com.example.playlistmaker.domain.api.MediaPlayerRepository
 
 class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : MediaPlayerRepository {
     private var playerState = STATE_DEFAULT
-//    init {
-//        mediaPlayer.setDataSource(url)
-//        mediaPlayer.prepareAsync()
-//    }
+
     override fun pausePlayer() {
-        mediaPlayer.pause()
-        playerState = STATE_PAUSED
+        if (playerState != STATE_RELEASE) {
+            mediaPlayer.pause()
+            playerState = STATE_PAUSED
+        }
     }
     override fun startPlayer() {
-        mediaPlayer.start()
-        playerState = STATE_PLAYING
+        if (playerState != STATE_RELEASE) {
+            mediaPlayer.start()
+            playerState = STATE_PLAYING
+        }
     }
     override fun destroy() {
+        playerState = STATE_RELEASE
         mediaPlayer.release()
     }
 
@@ -26,15 +28,17 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : MediaPla
         playerState = STATE_PREPARED
     }
     override fun setUrl(url: String) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
+        if (playerState == STATE_DEFAULT) {
+            mediaPlayer.setDataSource(url)
+            mediaPlayer.prepareAsync()
+        }
     }
     override fun preparedListener(listener: () -> Unit) {
-        mediaPlayer.setOnPreparedListener { listener() }
+        if (playerState == STATE_DEFAULT) mediaPlayer.setOnPreparedListener { listener() }
     }
 
     override fun completionListener(listener: () -> Unit) {
-        mediaPlayer.setOnCompletionListener { listener() }
+        if (playerState == STATE_DEFAULT) mediaPlayer.setOnCompletionListener { listener() }
     }
 
     override fun getCurrentPosition(): Int = mediaPlayer.currentPosition
@@ -44,5 +48,6 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : MediaPla
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
+        private const val STATE_RELEASE = 4
     }
 }

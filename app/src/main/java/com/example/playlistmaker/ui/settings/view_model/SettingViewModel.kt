@@ -11,17 +11,18 @@ class SettingViewModel(
     private val themeInteractor: ThemeInteractor
 ) : ViewModel() {
     private var themeStateLiveData = MutableLiveData(getSavedThemeState())
-
     fun getThemeStateLiveData(): LiveData<Boolean> = themeStateLiveData
     private fun getSavedThemeState(): Boolean = themeManagerInteractor.getValue()
     fun saveThemeState(themeState: Boolean) {
         themeManagerInteractor.saveValue {
             themeState
         }
-        switchTheme(themeState)
-        if(themeStateLiveData.value != themeState) themeStateLiveData.postValue(themeState)
+        if(themeStateLiveData.value != themeState) {
+            switchTheme(themeState)
+        }
     }
     private fun switchTheme(themeState: Boolean) {
         themeInteractor.switchTheme(themeState)
+        themeStateLiveData.postValue(themeState)
     }
 }

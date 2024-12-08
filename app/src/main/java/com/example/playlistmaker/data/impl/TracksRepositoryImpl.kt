@@ -35,7 +35,6 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                 emit(Resource.Error("${response.resultCode}"))
             }
         } catch (e: Exception) {
-            for (i in (networkClient.doRequest(TrackSearchRequest(text)) as TrackResponse).results) Log.d("searchRequest", i.toString())
             Log.d("searchRequest", "searchTracks - ${e.message}")
             emit(Resource.Error(e.message.toString()))
         }
