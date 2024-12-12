@@ -36,7 +36,6 @@ class SearchFragment : Fragment() {
     private var searchText = SEARCH_TEXT_DEF
     private val trackAdapter = TrackAdapter { track ->
         onTrackClickDebounce(track)
-
     }
 
 
@@ -51,12 +50,12 @@ class SearchFragment : Fragment() {
 
     @SuppressLint("MissingInflatedId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         onTrackClickDebounce = debounce(Delay.ONE_SECOND_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             viewModel.saveTracks(track)
             val trackBundle = bundleOf(AudioPlayerFragment.TRACK_VALUE to Gson().toJson(track))
             findNavController().navigate(R.id.action_searchFragment2_to_audioPlayerFragment, trackBundle)
         }
-        super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.trackList
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         if (savedInstanceState != null) {
