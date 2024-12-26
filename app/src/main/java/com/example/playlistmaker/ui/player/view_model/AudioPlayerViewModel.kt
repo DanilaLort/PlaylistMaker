@@ -6,20 +6,49 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.api.MediaPlayerInteractor
 import com.example.playlistmaker.domain.db.FavoriteTrackInteractor
+import com.example.playlistmaker.domain.db.PlaylistInteractor
+import com.example.playlistmaker.domain.db.PlaylistTrackInteractor
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.playlists.PlaylistState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AudioPlayerViewModel(
     private val mediaPlayerInteractor: MediaPlayerInteractor,
-    private val favoriteTrackInteractor: FavoriteTrackInteractor
+    private val favoriteTrackInteractor: FavoriteTrackInteractor,
+    private val playlistInteractor: PlaylistInteractor,
+    private val playlistTrackInteractor: PlaylistTrackInteractor
 ) : ViewModel() {
+    private val playlistState = MutableLiveData<PlaylistState>()
     private var playerStateLiveData = MutableLiveData<AudioPlayerState>()
     private var favoriteStateLiveData = MutableLiveData<Boolean>()
     private var timerJob: Job? = null
     fun getPlayerStateLiveData(): LiveData<AudioPlayerState> = playerStateLiveData
     fun getFavoriteStateLiveData(): LiveData<Boolean> = favoriteStateLiveData
+    fun getLiveDataPlaylistState(): LiveData<PlaylistState> = playlistState
+    fun getPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor
+                .getPlaylists()
+                .collect { playlists ->
+                    playlistState.postValue(PlaylistState.Content(playlists))
+                }
+        }
+    }
+    fun saveTrack(track: Track, playlist: Playlist) {
+        viewModelScope.launch {
+            if (!playlist.trackList.contains(track.trackId)) {
+                playlistTrackInteractor.saveTrack(track)
+                (playlist.trackList as ArrayList).add(track.trackId!!)
+                playlist.trackCount = playlist.trackList.size
+                playlistInteractor.updatePlaylist(playlist)
+                playlistState.postValue(PlaylistState.TrackAdded(playlist.playlistName))
+            } else
+                playlistState.postValue(PlaylistState.TrackAlreadyAdded(playlist.playlistName))
+        }
+    }
     fun setUrl(url: String) {
         mediaPlayerInteractor.setUrl(url)
         prepareMediaPlayer()

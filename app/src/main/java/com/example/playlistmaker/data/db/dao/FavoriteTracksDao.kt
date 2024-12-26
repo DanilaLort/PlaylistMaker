@@ -5,16 +5,16 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.playlistmaker.data.db.entity.TrackEntity
+import com.example.playlistmaker.data.db.entity.FavoriteTracksEntity
 
 @Dao
-interface TrackDao {
+interface FavoriteTracksDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTrack(track: TrackEntity)
-    @Delete(entity = TrackEntity::class)
-    suspend fun deleteTrack(entity: TrackEntity)
+    suspend fun insertTrack(track: FavoriteTracksEntity)
+    @Delete(entity = FavoriteTracksEntity::class)
+    suspend fun deleteTrack(entity: FavoriteTracksEntity)
     @Query("SELECT * FROM track_table ORDER BY date DESC;")
-    suspend fun getTracks(): List<TrackEntity>
+    suspend fun getTracks(): List<FavoriteTracksEntity>
     @Query("SELECT id FROM track_table")
     suspend fun getTracksId(): List<Int>
 }

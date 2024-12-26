@@ -1,12 +1,13 @@
 package com.example.playlistmaker.data.db.converters
 
-import com.example.playlistmaker.data.db.entity.TrackEntity
+import com.example.playlistmaker.data.db.entity.FavoriteTracksEntity
+import com.example.playlistmaker.data.db.entity.PlaylistTrackEntity
 import com.example.playlistmaker.domain.models.Track
 import java.util.Calendar
 
-class TrackDbConverter {
-    fun map(track: Track) : TrackEntity {
-        return TrackEntity(
+class FavoriteTrackDbConverter {
+    fun map(track: Track) : FavoriteTracksEntity {
+        return FavoriteTracksEntity(
             track.trackName,
             track.artistName,
             track.trackTime,
@@ -20,7 +21,8 @@ class TrackDbConverter {
             Calendar.getInstance().time.time
         )
     }
-    fun map(track: TrackEntity ): Track {
+
+    fun map(track: FavoriteTracksEntity): Track {
         return Track(
             track.trackName,
             track.artistName,

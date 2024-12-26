@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import com.example.playlistmaker.domain.api.ValueManagerRepository
 
 class ThemeManagerRepositoryImpl(private val sharedPrefs: SharedPreferences) : ValueManagerRepository<Boolean> {
-//    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
     override fun saveValue(value: Boolean) {
         sharedPrefs.edit()
             .putBoolean(KEY_FOR_THEME, value)

@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/error_placeholder"
+        android:src="@drawable/ic_error_placeholder"
         android:visibility="gone"/>
     <TextView
         android:id="@+id/message"

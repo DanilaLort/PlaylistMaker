@@ -5,6 +5,7 @@ import com.example.playlistmaker.ui.library.view_model.MediaLibraryViewModel
 import com.example.playlistmaker.ui.library.view_model.PlaylistFragmentViewModel
 import com.example.playlistmaker.ui.main.view_model.MainActivityViewModel
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerViewModel
+import com.example.playlistmaker.ui.playlist_creation.view_model.PlaylistCreationViewModel
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.settings.view_model.SettingViewModel
 import org.koin.android.ext.koin.androidContext
@@ -23,15 +24,18 @@ val viewModelModule = module {
         SettingViewModel(get(named("ThemeManagerInteractor")), get())
     }
     viewModel {
-        AudioPlayerViewModel(get(), get())
+        AudioPlayerViewModel(get(), get(), get(), get())
     }
     viewModel {
         MediaLibraryViewModel()
     }
     viewModel {
-        PlaylistFragmentViewModel()
+        PlaylistFragmentViewModel(get())
     }
     viewModel {
         FavoriteTracksViewModel(androidContext(), get())
+    }
+    viewModel {
+        PlaylistCreationViewModel(get(), get())
     }
 }

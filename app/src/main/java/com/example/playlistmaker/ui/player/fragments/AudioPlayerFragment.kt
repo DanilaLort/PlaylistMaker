@@ -6,16 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.main.activity.MainActivity
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerState
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerViewModel
+import com.example.playlistmaker.ui.playlists.PlaylistRectangularAdapter
+import com.example.playlistmaker.ui.playlists.PlaylistState
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -23,6 +29,10 @@ class AudioPlayerFragment : Fragment() {
     private lateinit var buttonPlay: ImageButton
     private lateinit var trackTime: TextView
     private lateinit var binding: FragmentAudioPlayerBinding
+    private lateinit var playlistClickListener: (Playlist) -> Unit
+    private val adapter = PlaylistRectangularAdapter {
+        playlistClickListener(it)
+    }
     private val viewModel by viewModel<AudioPlayerViewModel>()
 
     override fun onCreateView(
@@ -95,6 +105,68 @@ class AudioPlayerFragment : Fragment() {
                 }
             }
         }
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.playlistsBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.buttonAddToPlayList.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+
+        binding.newPlaylistButton.setOnClickListener {
+            findNavController().navigate(R.id.action_audioPlayerFragment_to_playlistCreationFragment)
+        }
+
+        playlistClickListener = { playlist ->
+            viewModel.saveTrack(track, playlist)
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                        viewModel.getPlaylists()
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = slideOffset + 1
+            }
+        })
+
+        binding.playlists.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        viewModel.getLiveDataPlaylistState().observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is PlaylistState.Content -> {
+                    adapter.playlists = state.playlists
+                    binding.playlists.adapter = adapter
+                }
+
+                is PlaylistState.TrackAlreadyAdded -> {
+                    Toast.makeText(context,
+                        getString(R.string.AlreadyAdded)+ " ${state.playlistName}", Toast.LENGTH_SHORT).show()
+                }
+
+                is PlaylistState.TrackAdded -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    Toast.makeText(context,
+                        getString(R.string.AddedToPlaylist) + " ${state.playlistName}", Toast.LENGTH_SHORT).show()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity).setBottomNavigationViewVisibility(false)
     }
 
     override fun onPause() {
@@ -105,7 +177,6 @@ class AudioPlayerFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         (activity as MainActivity).setBottomNavigationViewVisibility(true)
-
     }
 
     companion object {
