@@ -6,7 +6,6 @@ import com.example.playlistmaker.data.db.converters.PlaylistDbConverter
 import com.example.playlistmaker.data.impl.FavoriteTracksRepositoryImpl
 import com.example.playlistmaker.data.impl.MediaPlayerRepositoryImpl
 import com.example.playlistmaker.data.impl.PlaylistRepositoryImpl
-import com.example.playlistmaker.data.impl.PlaylistTrackRepositoryImpl
 import com.example.playlistmaker.data.impl.ThemeManagerRepositoryImpl
 import com.example.playlistmaker.data.impl.ThemeRepositoryImpl
 import com.example.playlistmaker.data.impl.TrackCoverRepositoryImpl
@@ -19,7 +18,6 @@ import com.example.playlistmaker.domain.api.TracksRepository
 import com.example.playlistmaker.domain.api.ValueManagerRepository
 import com.example.playlistmaker.domain.db.FavoriteTracksRepository
 import com.example.playlistmaker.domain.db.PlaylistRepository
-import com.example.playlistmaker.domain.db.PlaylistTrackRepository
 import com.example.playlistmaker.domain.models.Track
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -40,9 +38,6 @@ val repositoryModule = module {
     }
     single<FavoriteTracksRepository> {
         FavoriteTracksRepositoryImpl(get(), get())
-    }
-    single<PlaylistTrackRepository> {
-        PlaylistTrackRepositoryImpl(get(), get())
     }
     single<ValueManagerRepository<Boolean>>(named("ThemeManagerRepository")) {
         ThemeManagerRepositoryImpl(get())

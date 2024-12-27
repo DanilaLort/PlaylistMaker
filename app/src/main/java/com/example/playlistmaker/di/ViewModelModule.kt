@@ -24,7 +24,7 @@ val viewModelModule = module {
         SettingViewModel(get(named("ThemeManagerInteractor")), get())
     }
     viewModel {
-        AudioPlayerViewModel(get(), get(), get(), get())
+        AudioPlayerViewModel(get(), get(), get())
     }
     viewModel {
         MediaLibraryViewModel()
