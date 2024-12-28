@@ -10,8 +10,6 @@ class TrackManagerRepositoryImpl(
     private val sharedPrefs: SharedPreferences,
     private val gson: Gson
 ) : ValueManagerRepository<List<Track>> {
-//    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
-//    private val gson = Gson()
     private val trackListType = object : TypeToken<ArrayList<Track>>() {}.type
    override fun saveValue(value: List<Track>) {
         sharedPrefs.edit()

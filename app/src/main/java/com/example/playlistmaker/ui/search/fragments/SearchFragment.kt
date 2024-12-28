@@ -160,12 +160,12 @@ class SearchFragment : Fragment() {
             Message.NOTHING_WAS_FOUND -> {
                 binding.reloadButton.visibility = View.GONE
                 binding.placeholderMessage.visibility = View.VISIBLE
-                binding.errorImage.setImageResource(R.drawable.error_placeholder)
+                binding.errorImage.setImageResource(R.drawable.ic_error_placeholder)
                 binding.errorMessage.setText(R.string.nothingWasFound)
             }
             Message.COMMUNICATION_PROBLEMS -> {
                 binding.placeholderMessage.visibility = View.VISIBLE
-                binding.errorImage.setImageResource(R.drawable.communication_problems)
+                binding.errorImage.setImageResource(R.drawable.ic_communication_problems)
                 binding.errorMessage.setText(R.string.communication_problems)
                 binding.reloadButton.visibility = View.VISIBLE
             }
