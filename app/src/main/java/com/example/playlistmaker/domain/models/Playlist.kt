@@ -1,7 +1,5 @@
 package com.example.playlistmaker.domain.models
 
-import java.time.Year
-
 data class Playlist(
     val id: Int?,
     val playlistName: String,
@@ -12,7 +10,10 @@ data class Playlist(
     val playlistYear: String
 ) {
     val trackCount: String get() {
-        return if (trackCountInt != 1) "$trackCountInt треков"
-        else "$trackCountInt трек"
+        return when (trackCountInt) {
+            1 -> "$trackCountInt трек"
+            in 2..4 -> "$trackCountInt трека"
+            else -> "$trackCountInt треков"
+        }
     }
  }
