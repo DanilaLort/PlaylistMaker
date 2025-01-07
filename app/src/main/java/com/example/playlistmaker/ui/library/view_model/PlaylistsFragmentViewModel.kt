@@ -8,7 +8,7 @@ import com.example.playlistmaker.domain.db.PlaylistInteractor
 import com.example.playlistmaker.ui.playlists.PlaylistState
 import kotlinx.coroutines.launch
 
-class PlaylistFragmentViewModel(
+class PlaylistsFragmentViewModel(
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
     private val playlistState = MutableLiveData<PlaylistState>()

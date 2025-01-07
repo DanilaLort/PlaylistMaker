@@ -8,7 +8,6 @@ import com.example.playlistmaker.domain.db.PlaylistRepository
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
 class PlaylistRepositoryImpl(
@@ -24,6 +23,12 @@ class PlaylistRepositoryImpl(
 
     override suspend fun savePlaylist(playlist: Playlist) {
         appDatabase.playlistDao().savePlaylist(playlistDbConverter.map(playlist))
+    }
+
+    override suspend fun checkTrackId(id: Int): Boolean {
+        val tracksId: List<List<Int>> = appDatabase.playlistDao().getPlaylistsTracksId().map { playlistDbConverter.map(it) }
+        tracksId.map { if (it.contains(id)) return true }
+        return false
     }
 
     override suspend fun updatePlaylist(playlist: Playlist) {
@@ -42,8 +47,17 @@ class PlaylistRepositoryImpl(
         appDatabase.playlistTrackDao().saveTrack(playlistDbConverter.map(track))
     }
 
-    override suspend fun deleteTrack(track: Track) {
-        appDatabase.playlistTrackDao().deleteTrack(playlistDbConverter.map(track))
+    override suspend fun deleteTrack(track: Track, playlist: Playlist): Flow<Playlist> = flow {
+        (playlist.trackList as ArrayList<Int>).remove(track.trackId)
+        playlist.trackCountInt = playlist.trackList.size
+        updatePlaylist(playlist)
+        if (checkTrackId(track.trackId!!))
+            appDatabase.playlistTrackDao().deleteTrack(playlistDbConverter.map(track))
+        emit(playlist)
+    }
+
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        appDatabase.playlistDao().deletePlaylist(playlistDbConverter.map(playlist))
     }
 
     private fun convertFromTrackEntity(tracks: List<PlaylistTrackEntity>) : List<Track> {

@@ -41,7 +41,7 @@ class FavoriteTracksFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onTrackClickDebounce = debounce(Delay.ONE_SECOND_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
-            val trackBundle = bundleOf(AudioPlayerFragment.TRACK_VALUE to Gson().toJson(track))
+            val trackBundle = bundleOf(TRACK_VALUE to Gson().toJson(track))
             try {
                 findNavController().navigate(
                     R.id.action_mediaLibraryFragment_to_audioPlayerFragment,
@@ -91,6 +91,7 @@ class FavoriteTracksFragment : Fragment() {
     }
     companion object {
         private const val EMPTY_LIBRARY = "EMPTY_LIBRARY"
+        private const val TRACK_VALUE = "TRACK_VALUE"
         private const val CONTENT = "CONTENT"
         private const val LOADING = "LOADING"
         private const val HIDE_ALL = "HIDE_ALL"

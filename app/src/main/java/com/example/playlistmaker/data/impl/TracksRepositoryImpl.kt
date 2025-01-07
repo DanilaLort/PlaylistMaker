@@ -21,7 +21,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                     Track(
                         it.trackName,
                         it.artistName,
-                        SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTime),
+                        it.trackTime,
                         it.trackId,
                         it.artworkUrl100,
                         it.collectionName,

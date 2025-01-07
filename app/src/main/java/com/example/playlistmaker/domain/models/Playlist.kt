@@ -1,15 +1,18 @@
 package com.example.playlistmaker.domain.models
 
+import java.time.Year
+
 data class Playlist(
     val id: Int?,
     val playlistName: String,
     val playlistDescription: String,
     val coverPath: String?,
     val trackList: List<Int>,
-    var trackCount: Int
+    var trackCountInt: Int,
+    val playlistYear: String
 ) {
-    fun getTrackCount(): String {
-        return if (trackCount != 1) "$trackCount треков"
-        else "$trackCount трек"
+    val trackCount: String get() {
+        return if (trackCountInt != 1) "$trackCountInt треков"
+        else "$trackCountInt трек"
     }
  }

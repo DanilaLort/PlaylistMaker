@@ -14,7 +14,7 @@ class PlaylistDbConverter(private val gson: Gson) {
     fun map(track: Track): PlaylistTrackEntity {
         return PlaylistTrackEntity(track.trackName,
             track.artistName,
-            track.trackTime,
+            track.trackTimeMillis,
             track.trackId,
             track.artworkUrl100,
             track.collectionName,
@@ -29,7 +29,7 @@ class PlaylistDbConverter(private val gson: Gson) {
         return Track(
             track.trackName,
             track.artistName,
-            track.trackTime,
+            track.trackTimeMillis,
             track.id,
             track.artworkUrl100,
             track.collectionName,
@@ -45,13 +45,16 @@ class PlaylistDbConverter(private val gson: Gson) {
             trackDescription = playlist.playlistDescription,
             coverPath = playlist.coverPath,
             trackList = gson.toJson(playlist.trackList),
-            trackCount = playlist.trackCount
+            trackCount = playlist.trackCountInt,
+            playlistYear = playlist.playlistYear
         ) else PlaylistEntity(playlist.id,
             playlist.playlistName,
             playlist.playlistDescription,
             playlist.coverPath,
             gson.toJson(playlist.trackList, trackListType),
-            playlist.trackCount)
+            playlist.trackCountInt,
+            playlist.playlistYear
+        )
     }
 
     fun map(playlistEntity: PlaylistEntity): Playlist {
@@ -61,7 +64,10 @@ class PlaylistDbConverter(private val gson: Gson) {
             playlistEntity.trackDescription,
             playlistEntity.coverPath,
             gson.fromJson(playlistEntity.trackList, trackListType),
-            playlistEntity.trackCount
+            playlistEntity.trackCount,
+            playlistEntity.playlistYear
         )
     }
+
+    fun map(tracksId: String): List<Int> = gson.fromJson(tracksId, trackListType)
 }

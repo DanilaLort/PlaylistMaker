@@ -7,20 +7,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistCreationBinding
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.ui.main.activity.MainActivity
 import com.example.playlistmaker.ui.playlist_creation.view_model.PlaylistCreationViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistCreationFragment : Fragment() {
@@ -31,6 +33,7 @@ class PlaylistCreationFragment : Fragment() {
     private var playlistDescription: String? = null
     private var coverPath: String? = null
     private var confirmDialog: MaterialAlertDialogBuilder? = null
+    private var playlist: Playlist? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +50,22 @@ class PlaylistCreationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as MainActivity).setBottomNavigationViewVisibility(false)
+        playlist = Gson().fromJson(requireArguments().getString(PLAYLIST_VALUE), Playlist::class.java)
+        if (playlist != null) {
+            binding.playlistName.setText(playlist!!.playlistName)
+            binding.playlistDescription.setText(playlist!!.playlistDescription)
+            Glide.with(this)
+                .load(playlist!!.coverPath?.toUri())
+                .placeholder(R.drawable.ic_cover)
+                .centerCrop()
+                .transform(RoundedCorners(16))
+                .into(binding.playlistCover)
+
+            binding.createButton.isEnabled = !playlist!!.playlistName.isNullOrEmpty()
+            binding.playlistName.isActivated = !playlist!!.playlistName.isNullOrEmpty()
+            binding.playlistDescription.isActivated = !playlist!!.playlistDescription.isNullOrEmpty()
+        }
+
 
         binding.returnButton.setOnClickListener {
             showDialog()
@@ -94,7 +113,9 @@ class PlaylistCreationFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
         binding.createButton.setOnClickListener {
-            if (playlistName != null)
+            if (playlist != null) {
+                playlistCreationViewModel.updatePlaylist(createPlaylist())
+            } else if (playlistName != null)
                 playlistCreationViewModel.savePlaylist(playlistName!!, playlistDescription, coverPath)
             findNavController().navigateUp()
         }
@@ -119,11 +140,30 @@ class PlaylistCreationFragment : Fragment() {
         callback.remove()
     }
 
+    private fun createPlaylist(): Playlist {
+        val newPlaylistName = if (playlistName != playlist!!.playlistName && !playlistName.isNullOrEmpty()) playlistName!! else playlist!!.playlistName
+        val newPlaylistDescription = if (playlistDescription != playlist!!.playlistDescription && !playlistDescription.isNullOrEmpty()) playlistDescription!!
+        else playlist!!.playlistDescription
+        val newCoverPath = if (coverPath != playlist!!.coverPath && !coverPath.isNullOrEmpty()) coverPath!! else playlist!!.coverPath
+        return Playlist(playlist!!.id,
+            newPlaylistName,
+            newPlaylistDescription,
+            newCoverPath,
+            playlist!!.trackList,
+            playlist!!.trackCountInt,
+            playlist!!.playlistYear
+            )
+    }
+
     private fun showDialog() {
         Log.d("coverPath", "$coverPath")
         if (!playlistName.isNullOrEmpty() || !playlistDescription.isNullOrEmpty() || !coverPath.isNullOrEmpty())
             confirmDialog?.show()
         else
             findNavController().navigateUp()
+    }
+
+    companion object {
+        private const val PLAYLIST_VALUE = "PLAYLIST_VALUE"
     }
 }

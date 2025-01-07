@@ -53,7 +53,7 @@
     <Button
         style="@style/settingsButton"
         android:id="@+id/button_share"
-        android:text="@string/share"
+        android:text="@string/shareApp"
         app:icon="@drawable/ic_share"/>
 
     <Button

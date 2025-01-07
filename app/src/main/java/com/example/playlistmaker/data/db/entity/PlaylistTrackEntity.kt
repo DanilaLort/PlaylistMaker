@@ -2,12 +2,14 @@ package com.example.playlistmaker.data.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Entity(tableName = "playlist_track_table")
 data class PlaylistTrackEntity(
     val trackName: String?,
     val artistName: String?,
-    val trackTime: String?,
+    val trackTimeMillis: Long?,
     @PrimaryKey
     val id: Int?,
     val artworkUrl100: String?,

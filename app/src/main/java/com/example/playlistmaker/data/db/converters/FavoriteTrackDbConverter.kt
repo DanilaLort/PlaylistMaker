@@ -10,7 +10,7 @@ class FavoriteTrackDbConverter {
         return FavoriteTracksEntity(
             track.trackName,
             track.artistName,
-            track.trackTime,
+            track.trackTimeMillis,
             track.trackId,
             track.artworkUrl100,
             track.collectionName,
@@ -26,7 +26,7 @@ class FavoriteTrackDbConverter {
         return Track(
             track.trackName,
             track.artistName,
-            track.trackTime,
+            track.trackTimeMillis,
             track.id,
             track.artworkUrl100,
             track.collectionName,

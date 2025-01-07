@@ -9,6 +9,8 @@ import com.example.playlistmaker.domain.api.TrackCoverInteractor
 import com.example.playlistmaker.domain.db.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class PlaylistCreationViewModel(
     private val playlistInteractor: PlaylistInteractor,
@@ -28,18 +30,26 @@ class PlaylistCreationViewModel(
             playlistDescription,
             coverPath,
             emptyList(),
-            0
+            0,
+            SimpleDateFormat("yyyy").format(Date())
         ) else Playlist(
             null,
             playlistName,
             "",
             coverPath,
             emptyList(),
-            0
+            0,
+            SimpleDateFormat("yyyy").format(Date())
         )
 
         viewModelScope.launch {
             playlistInteractor.savePlaylist(playlist)
+        }
+    }
+
+    fun updatePlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            playlistInteractor.updatePlaylist(playlist)
         }
     }
 }
