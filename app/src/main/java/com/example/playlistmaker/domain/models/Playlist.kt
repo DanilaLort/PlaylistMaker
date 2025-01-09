@@ -6,8 +6,7 @@ data class Playlist(
     val playlistDescription: String,
     val coverPath: String?,
     val trackList: List<Int>,
-    var trackCountInt: Int,
-    val playlistYear: String
+    var trackCountInt: Int
 ) {
     val trackCount: String get() {
         return when (trackCountInt) {

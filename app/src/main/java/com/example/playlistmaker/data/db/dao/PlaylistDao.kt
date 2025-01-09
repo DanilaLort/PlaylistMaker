@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun savePlaylist(entity: PlaylistEntity)
-    @Query("SELECT * FROM playlist_table")
+    @Query("SELECT * FROM playlist_table ORDER BY date DESC;")
     fun getPlaylists(): Flow<List<PlaylistEntity>>
+    @Query("SELECT * FROM playlist_table WHERE id = :id")
+    fun getPlaylistById(id: Int): Flow<PlaylistEntity>
     @Query("SELECT trackList FROM playlist_table")
     suspend fun getPlaylistsTracksId(): List<String>
     @Update(entity = PlaylistEntity::class, onConflict = OnConflictStrategy.REPLACE)

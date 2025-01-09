@@ -48,4 +48,5 @@
     <string name="minutes">" минуты"</string>
     <string name="minute">" минут"</string>
     <string name="thereAreNoTracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="save">Сохранить</string>
 </resources>

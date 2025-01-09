@@ -2,7 +2,6 @@ package com.example.playlistmaker.data.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.playlistmaker.domain.models.Playlist
 
 @Entity(tableName = "playlist_table")
 data class PlaylistEntity (
@@ -13,5 +12,5 @@ data class PlaylistEntity (
     val coverPath: String?,
     val trackList: String,
     val trackCount: Int,
-    val playlistYear: String
+    val date: Long
     )

@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -29,17 +30,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 class PlaylistFragment : Fragment() {
     private lateinit var binding: FragmentPlaylistBinding
     private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var playlist: Playlist
+    private lateinit var addBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private val playlistViewModel: PlaylistViewModel by viewModel()
     private val trackAdapter = TrackAdapter { track ->
         onTrackClickDebounce(track)
     }
-    private lateinit var playlist: Playlist
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,13 +54,13 @@ class PlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        playlist = Gson().fromJson(requireArguments().getString(PLAYLIST_VALUE), Playlist::class.java)
+
+        playlistViewModel.getPlaylist(requireArguments().getInt(PLAYLIST_VALUE))
 
         trackAdapter.longClickListener = TrackAdapter.TrackLongClickListener { track ->
             showTrackDialog(track)
         }
 
-        playlistViewModel.getTracks(playlist.trackList)
         (activity as MainActivity).setBottomNavigationViewVisibility(false)
 
         playlistViewModel.getPlaylistTrackLiveData().observe(viewLifecycleOwner) { state ->
@@ -68,12 +69,11 @@ class PlaylistFragment : Fragment() {
                 binding.playlists.adapter = trackAdapter
 
                 var tracksTimeMillis = 0L
-                state.tracks.map { tracksTimeMillis += it.trackTimeMillis!! }
+                state.tracks.forEach { tracksTimeMillis += it.trackTimeMillis!! }
 
-                var trackTime = SimpleDateFormat("mm", Locale.getDefault()).format(tracksTimeMillis)
+                val trackTime = SimpleDateFormat("mm", Locale.getDefault()).format(tracksTimeMillis)
 
                 binding.playlistDuration.text = formatPlaylistDuration(trackTime)
-                Log.d("tracksTimeMillis", tracksTimeMillis.toString())
             }
         }
 
@@ -83,13 +83,11 @@ class PlaylistFragment : Fragment() {
             displayInfo()
         }
 
-        displayInfo()
-
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet).apply {
+        BottomSheetBehavior.from(binding.tracksBottomSheet).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        val addBottomSheetBehavior = BottomSheetBehavior.from(binding.additionalBottomSheet).apply {
+        addBottomSheetBehavior = BottomSheetBehavior.from(binding.additionalBottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
 
@@ -136,19 +134,7 @@ class PlaylistFragment : Fragment() {
             showPlaylistDialog()
         }
 
-        Glide.with(view)
-            .load(playlist.coverPath)
-            .placeholder(R.drawable.ic_cover)
-            .centerCrop()
-            .transform(RoundedCorners(8))
-            .into(binding.playlistCover)
 
-        Glide.with(view)
-            .load(playlist.coverPath)
-            .placeholder(R.drawable.ic_cover)
-            .centerCrop()
-            .transform(RoundedCorners(8))
-            .into(binding.playlistPanel.playlistCover)
 
         onTrackClickDebounce = debounce(Delay.ONE_SECOND_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             val trackBundle = bundleOf(TRACK_VALUE to Gson().toJson(track))
@@ -189,21 +175,37 @@ class PlaylistFragment : Fragment() {
     private fun displayInfo() {
         binding.playlistName.text = playlist.playlistName
         binding.playlistTrackCount.text = playlist.trackCount
-        binding.playlistYear.text = playlist.playlistYear
+        binding.playlistDescription.text = playlist.playlistDescription
         binding.playlistPanel.playlistName.text = playlist.playlistName
         binding.playlistPanel.trackCount.text = playlist.trackCount
+
+
+        Glide.with(requireView())
+            .load(playlist.coverPath)
+            .override(0)
+            .centerCrop()
+            .into(binding.playlistCover)
+
+        Glide.with(requireView())
+            .load(playlist.coverPath)
+            .placeholder(R.drawable.ic_cover)
+            .centerCrop()
+            .transform(RoundedCorners(8))
+            .into(binding.playlistPanel.playlistCover)
     }
 
     private fun createMessage(trackList: List<Track>) {
         if (trackList.isNotEmpty()) {
             var message =
                 "${playlist.playlistName}\n${playlist.playlistDescription}\n${playlist.trackCount}"
-            trackList.forEachIndexed { index, track -> message += "\n$index ${track.artistName} ${track.trackName}" }
+            trackList.forEachIndexed { index, track -> message += "\n${index + 1} ${track.artistName} - ${track.trackName} ${track.trackTime}" }
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
             shareIntent.putExtra(Intent.EXTRA_TEXT, message)
+            addBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share)))
         } else {
+            addBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             Toast.makeText(context, getString(R.string.thereAreNoTracks), Toast.LENGTH_SHORT).show()
         }
     }
@@ -212,7 +214,6 @@ class PlaylistFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         (activity as MainActivity).setBottomNavigationViewVisibility(false)
-        displayInfo()
     }
 
     private fun formatPlaylistDuration(duration: String) : String {

@@ -14,7 +14,6 @@ import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.ui.library.view_model.PlaylistsFragmentViewModel
 import com.example.playlistmaker.ui.playlists.PlaylistSquareAdapter
 import com.example.playlistmaker.ui.playlists.PlaylistState
-import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -61,7 +60,7 @@ class PlaylistsFragment : Fragment() {
         }
 
         playlistClickListener = { playlist ->
-            val playlistBundle = bundleOf(PLAYLIST_VALUE to Gson().toJson(playlist))
+            val playlistBundle = bundleOf(PLAYLIST_VALUE to playlist.id)
             findNavController().navigate(R.id.action_mediaLibraryFragment_to_playlistFragment2, playlistBundle)
         }
     }

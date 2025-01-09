@@ -42,4 +42,12 @@ class PlaylistViewModel(
         }
     }
 
+    fun getPlaylist(id: Int) {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylistById(id).collect {
+                playlistLiveData.postValue(it)
+            }
+        }
+    }
+
 }

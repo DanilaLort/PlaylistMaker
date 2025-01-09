@@ -46,14 +46,14 @@ class PlaylistDbConverter(private val gson: Gson) {
             coverPath = playlist.coverPath,
             trackList = gson.toJson(playlist.trackList),
             trackCount = playlist.trackCountInt,
-            playlistYear = playlist.playlistYear
+            date = Calendar.getInstance().time.time
         ) else PlaylistEntity(playlist.id,
             playlist.playlistName,
             playlist.playlistDescription,
             playlist.coverPath,
             gson.toJson(playlist.trackList, trackListType),
             playlist.trackCountInt,
-            playlist.playlistYear
+            Calendar.getInstance().time.time
         )
     }
 
@@ -64,8 +64,7 @@ class PlaylistDbConverter(private val gson: Gson) {
             playlistEntity.trackDescription,
             playlistEntity.coverPath,
             gson.fromJson(playlistEntity.trackList, trackListType),
-            playlistEntity.trackCount,
-            playlistEntity.playlistYear
+            playlistEntity.trackCount
         )
     }
 

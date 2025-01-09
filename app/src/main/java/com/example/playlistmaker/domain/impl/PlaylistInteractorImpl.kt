@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.Flow
 class PlaylistInteractorImpl(
     private val playlistRepository: PlaylistRepository
 ) : PlaylistInteractor {
+    override fun getPlaylistById(id: Int): Flow<Playlist> {
+        return playlistRepository.getPlaylistById(id)
+    }
+
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlistRepository.getPlaylists()
     }

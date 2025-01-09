@@ -61,9 +61,10 @@ class PlaylistCreationFragment : Fragment() {
                 .transform(RoundedCorners(16))
                 .into(binding.playlistCover)
 
-            binding.createButton.isEnabled = !playlist!!.playlistName.isNullOrEmpty()
-            binding.playlistName.isActivated = !playlist!!.playlistName.isNullOrEmpty()
-            binding.playlistDescription.isActivated = !playlist!!.playlistDescription.isNullOrEmpty()
+            binding.createButton.isEnabled = playlist!!.playlistName.isNotEmpty()
+            binding.createButton.text = getString(R.string.save)
+            binding.playlistName.isActivated = playlist!!.playlistName.isNotEmpty()
+            binding.playlistDescription.isActivated = playlist!!.playlistDescription.isNotEmpty()
         }
 
 
@@ -150,8 +151,7 @@ class PlaylistCreationFragment : Fragment() {
             newPlaylistDescription,
             newCoverPath,
             playlist!!.trackList,
-            playlist!!.trackCountInt,
-            playlist!!.playlistYear
+            playlist!!.trackCountInt
             )
     }
 

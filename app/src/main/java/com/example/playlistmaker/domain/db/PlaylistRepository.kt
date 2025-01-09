@@ -5,6 +5,7 @@ import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistRepository {
+    fun getPlaylistById(id: Int): Flow<Playlist>
     fun getPlaylists(): Flow<List<Playlist>>
     suspend fun savePlaylist(playlist: Playlist)
     suspend fun checkTrackId(id: Int): Boolean
