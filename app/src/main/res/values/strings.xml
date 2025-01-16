@@ -5,7 +5,7 @@
     <string name="settings">Настройки</string>
     <string name="darkTheme">Темная тема</string>
     <string name="support">Написать в поддержку</string>
-    <string name="share">Поделиться приложением</string>
+    <string name="shareApp">Поделиться приложением</string>
     <string name="termsOfUse">Пользовательское соглашение</string>
     <string name="supportMessage">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="supportMessageTitle">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
@@ -37,4 +37,16 @@
     <string name="finish">Завершить</string>
     <string name="AddedToPlaylist">Добавлено в плейлист</string>
     <string name="AlreadyAdded">Трек уже добавлен в плейлист</string>
+    <string name="share">Поделиться</string>
+    <string name="editInfo">Редактировать информацию</string>
+    <string name="deletePlaylist">Удалить плейлист</string>
+    <string name="wantDeleteTrack">Хотите удалить трек?</string>
+    <string name="no">Нет</string>
+    <string name="yes">Да</string>
+    <string name="wantDeletePlaylist">Хотите удалить плейлист</string>
+    <string name="minute1">" минута"</string>
+    <string name="minutes">" минуты"</string>
+    <string name="minute">" минут"</string>
+    <string name="thereAreNoTracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="save">Сохранить</string>
 </resources>

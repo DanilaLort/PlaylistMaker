@@ -4,27 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentPlaylistBinding
-import com.example.playlistmaker.ui.library.view_model.PlaylistFragmentViewModel
-import com.example.playlistmaker.ui.playlists.PlaylistState
+import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.example.playlistmaker.domain.models.Playlist
+import com.example.playlistmaker.ui.library.view_model.PlaylistsFragmentViewModel
 import com.example.playlistmaker.ui.playlists.PlaylistSquareAdapter
+import com.example.playlistmaker.ui.playlists.PlaylistState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlaylistFragment : Fragment() {
-    private var _binding: FragmentPlaylistBinding? = null
+class PlaylistsFragment : Fragment() {
+    private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
-    private val playlistViewModel: PlaylistFragmentViewModel by viewModel()
-    private val adapter = PlaylistSquareAdapter()
+    private val playlistViewModel: PlaylistsFragmentViewModel by viewModel()
+    private lateinit var playlistClickListener: (Playlist) -> Unit
+    private val adapter = PlaylistSquareAdapter {
+        playlistClickListener(it)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentPlaylistBinding.inflate(layoutInflater, container, false)
+    ): View {
+        _binding = FragmentPlaylistsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -48,9 +53,15 @@ class PlaylistFragment : Fragment() {
                 else -> {}
             }
         }
+
         playlistViewModel.getPlaylists()
         binding.newPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaLibraryFragment_to_playlistCreationFragment)
+            findNavController().navigate(R.id.action_mediaLibraryFragment_to_playlistCreationFragment, bundleOf())
+        }
+
+        playlistClickListener = { playlist ->
+            val playlistBundle = bundleOf(PLAYLIST_VALUE to playlist.id)
+            findNavController().navigate(R.id.action_mediaLibraryFragment_to_playlistFragment2, playlistBundle)
         }
     }
 
@@ -82,10 +93,11 @@ class PlaylistFragment : Fragment() {
 
     companion object {
         private const val TWO_COLUMNS = 2
+        private const val PLAYLIST_VALUE = "PLAYLIST_VALUE"
         private const val EMPTY_LIBRARY = "EMPTY_LIBRARY"
         private const val CONTENT = "CONTENT"
         private const val LOADING = "LOADING"
         private const val HIDE_ALL = "HIDE_ALL"
-        fun newInstance() = PlaylistFragment()
+        fun newInstance() = PlaylistsFragment()
     }
 }

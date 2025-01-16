@@ -6,10 +6,13 @@ data class Playlist(
     val playlistDescription: String,
     val coverPath: String?,
     val trackList: List<Int>,
-    var trackCount: Int
+    var trackCountInt: Int
 ) {
-    fun getTrackCount(): String {
-        return if (trackCount != 1) "$trackCount треков"
-        else "$trackCount трек"
+    val trackCount: String get() {
+        return when (trackCountInt) {
+            1 -> "$trackCountInt трек"
+            in 2..4 -> "$trackCountInt трека"
+            else -> "$trackCountInt треков"
+        }
     }
  }

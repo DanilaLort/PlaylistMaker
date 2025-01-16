@@ -21,6 +21,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:paddingTop="4dp"
+        android:paddingStart="1dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="12sp"
         tools:text="Playlist name" />
@@ -30,6 +33,7 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:paddingStart="1dp"
         android:paddingTop="4dp"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="12sp"

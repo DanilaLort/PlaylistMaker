@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -115,7 +116,7 @@ class AudioPlayerFragment : Fragment() {
         }
 
         binding.newPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_audioPlayerFragment_to_playlistCreationFragment)
+            findNavController().navigate(R.id.action_audioPlayerFragment_to_playlistCreationFragment, bundleOf())
         }
 
         playlistClickListener = { playlist ->
@@ -180,6 +181,6 @@ class AudioPlayerFragment : Fragment() {
     }
 
     companion object {
-        const val TRACK_VALUE = "TRACK_VALUE"
+        private const val TRACK_VALUE = "TRACK_VALUE"
     }
 }

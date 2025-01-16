@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Yesterday (Remastered 2009)"
+            tools:text="Yesterday (Remastered 2009)"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="@id/rightGuideline"

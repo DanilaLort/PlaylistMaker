@@ -8,7 +8,7 @@ data class Track (
     val trackName: String?,
     val artistName: String?,
     @SerializedName("trackTimeMillis")
-    val trackTime: String?,
+    val trackTimeMillis: Long?,
     val trackId: Int?,
     val artworkUrl100: String?,
     val collectionName: String?,
@@ -18,6 +18,8 @@ data class Track (
     val previewUrl: String?,
     var isFavorite: Boolean = false
 ) {
+
+    val trackTime: String? get() = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)
 
     fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/',"512x512bb.jpg")
 

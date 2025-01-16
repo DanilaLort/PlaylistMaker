@@ -21,7 +21,7 @@ import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.player.fragments.AudioPlayerFragment
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
-import com.example.playlistmaker.ui.search.view_model.TrackState
+import com.example.playlistmaker.ui.tracks.TrackState
 import com.example.playlistmaker.ui.tracks.Delay
 import com.example.playlistmaker.ui.tracks.TrackAdapter
 import com.example.playlistmaker.utils.debounce
@@ -53,7 +53,7 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         onTrackClickDebounce = debounce(Delay.ONE_SECOND_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             viewModel.saveTracks(track)
-            val trackBundle = bundleOf(AudioPlayerFragment.TRACK_VALUE to Gson().toJson(track))
+            val trackBundle = bundleOf(TRACK_VALUE to Gson().toJson(track))
             findNavController().navigate(R.id.action_searchFragment2_to_audioPlayerFragment, trackBundle)
         }
         recyclerView = binding.trackList
@@ -186,17 +186,6 @@ class SearchFragment : Fragment() {
         }
     }
 
-//    private fun clickDebounce() : Boolean {
-//        val current = isClickAllowed
-//        if (isClickAllowed) {
-//            isClickAllowed = false
-//
-////            handler.postDelayed({ isClickAllowed = true }, Delay.ONE_SECOND_DELAY)
-//        }
-//        return current
-//    }
-
-//    private var isClickAllowed = true
     enum class Message {
         NOTHING_WAS_FOUND,
         COMMUNICATION_PROBLEMS,
@@ -205,6 +194,7 @@ class SearchFragment : Fragment() {
         PROGRESS_BAR
     }
     private companion object {
+        private const val TRACK_VALUE = "TRACK_VALUE"
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_TEXT_DEF = ""
     }

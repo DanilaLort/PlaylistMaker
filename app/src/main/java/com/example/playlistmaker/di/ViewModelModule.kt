@@ -2,9 +2,10 @@ package com.example.playlistmaker.di
 
 import com.example.playlistmaker.ui.library.view_model.FavoriteTracksViewModel
 import com.example.playlistmaker.ui.library.view_model.MediaLibraryViewModel
-import com.example.playlistmaker.ui.library.view_model.PlaylistFragmentViewModel
+import com.example.playlistmaker.ui.library.view_model.PlaylistsFragmentViewModel
 import com.example.playlistmaker.ui.main.view_model.MainActivityViewModel
 import com.example.playlistmaker.ui.player.view_model.AudioPlayerViewModel
+import com.example.playlistmaker.ui.playlist.view_model.PlaylistViewModel
 import com.example.playlistmaker.ui.playlist_creation.view_model.PlaylistCreationViewModel
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.settings.view_model.SettingViewModel
@@ -30,12 +31,15 @@ val viewModelModule = module {
         MediaLibraryViewModel()
     }
     viewModel {
-        PlaylistFragmentViewModel(get())
+        PlaylistsFragmentViewModel(get())
     }
     viewModel {
         FavoriteTracksViewModel(androidContext(), get())
     }
     viewModel {
         PlaylistCreationViewModel(get(), get())
+    }
+    viewModel {
+        PlaylistViewModel(get())
     }
 }

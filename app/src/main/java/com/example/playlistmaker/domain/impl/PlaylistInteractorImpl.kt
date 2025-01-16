@@ -9,18 +9,26 @@ import kotlinx.coroutines.flow.Flow
 class PlaylistInteractorImpl(
     private val playlistRepository: PlaylistRepository
 ) : PlaylistInteractor {
+    override fun getPlaylistById(id: Int): Flow<Playlist> {
+        return playlistRepository.getPlaylistById(id)
+    }
+
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlistRepository.getPlaylists()
+    }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        playlistRepository.updatePlaylist(playlist)
     }
 
     override suspend fun savePlaylist(playlist: Playlist) {
         playlistRepository.savePlaylist(playlist)
     }
 
-    override suspend fun updatePlaylist(track: Track, playlist: Playlist): Boolean {
+    override suspend fun saveTrack(track: Track, playlist: Playlist): Boolean {
         if (!playlist.trackList.contains(track.trackId)) {
             (playlist.trackList as ArrayList).add(track.trackId!!)
-            playlist.trackCount = playlist.trackList.size
+            playlist.trackCountInt = playlist.trackList.size
             playlistRepository.saveTrack(track)
             playlistRepository.updatePlaylist(playlist)
             return true
@@ -36,7 +44,11 @@ class PlaylistInteractorImpl(
         playlistRepository.saveTrack(track)
     }
 
-    override suspend fun deleteTrack(track: Track) {
-        playlistRepository.deleteTrack(track)
+    override suspend fun deleteTrack(track: Track, playlist: Playlist) : Flow<Playlist> {
+        return playlistRepository.deleteTrack(track, playlist)
+    }
+
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        playlistRepository.deletePlaylist(playlist)
     }
 }

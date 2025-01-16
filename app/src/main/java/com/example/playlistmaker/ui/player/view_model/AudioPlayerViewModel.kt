@@ -37,7 +37,7 @@ class AudioPlayerViewModel(
     }
     fun saveTrack(track: Track, playlist: Playlist) {
         viewModelScope.launch {
-            if (playlistInteractor.updatePlaylist(track, playlist)) {
+            if (playlistInteractor.saveTrack(track, playlist)) {
                 playlistState.postValue(PlaylistState.TrackAdded(playlist.playlistName))
             } else
                 playlistState.postValue(PlaylistState.TrackAlreadyAdded(playlist.playlistName))

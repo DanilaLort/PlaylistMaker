@@ -42,4 +42,10 @@ class PlaylistCreationViewModel(
             playlistInteractor.savePlaylist(playlist)
         }
     }
+
+    fun updatePlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            playlistInteractor.updatePlaylist(playlist)
+        }
+    }
 }
